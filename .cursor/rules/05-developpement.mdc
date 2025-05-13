@@ -1,0 +1,41 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Guide de Développement
+
+Ce guide explique comment configurer l'environnement de développement et exécuter l'application.
+
+## Configuration de l'Environnement
+
+1. Assurez-vous d'avoir Node.js et Yarn installés
+2. Installez les dépendances avec `yarn install`
+3. Pour la première exécution sur un appareil mobile, installez l'application Expo Go
+
+## Scripts de Développement
+
+Consultez le [package.json](mdc:package.json) pour tous les scripts disponibles :
+
+- `yarn start` : Démarre le serveur de développement Expo
+- `yarn android` : Lance l'application sur un émulateur ou appareil Android
+- `yarn ios` : Lance l'application sur un simulateur ou appareil iOS
+- `yarn web` : Lance l'application en mode web
+
+## Structure des Fichiers
+
+Lorsque vous développez de nouvelles fonctionnalités, suivez cette structure :
+
+- Nouveaux écrans dans `src/screens/`
+- Nouveaux composants réutilisables dans `src/components/`
+- Logique de navigation dans `src/navigation/`
+- Fonctions utilitaires dans `src/utils/`
+- Styles partagés dans `src/styles/`
+
+## Technologies Principales
+
+- React Native : Framework pour le développement mobile
+- Expo : Plateforme simplifiant le développement React Native
+- React Navigation : Bibliothèque de navigation
+- TypeScript : Pour le typage statique
+

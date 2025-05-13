@@ -1,20 +1,23 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import "react-native-gesture-handler";
+import React, { useState } from "react";
+import {
+  NavigationContainer,
+  DefaultTheme,
+  DarkTheme,
+} from "@react-navigation/native";
+import DrawerNavigator from "./src/navigation/DrawerNavigator";
+import { ThemeContext } from "./src/theme/ThemeContext";
 
 export default function App() {
+  const [isDark, setIsDark] = useState(false);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ThemeContext.Provider
+      value={{ isDark, toggleTheme: () => setIsDark(!isDark) }}
+    >
+      <NavigationContainer theme={isDark ? DarkTheme : DefaultTheme}>
+        <DrawerNavigator />
+      </NavigationContainer>
+    </ThemeContext.Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

@@ -1,0 +1,44 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Composants Réutilisables
+
+L'application utilise des composants réutilisables pour maintenir la cohérence et faciliter le développement.
+
+## Composants UI de Base
+
+- [src/components/Button.tsx](mdc:src/components/Button.tsx) : Bouton personnalisé réutilisable
+- [src/components/Input.tsx](mdc:src/components/Input.tsx) : Champ de saisie personnalisé
+- [src/components/ThemeToggleButton.tsx](mdc:src/components/ThemeToggleButton.tsx) : Bouton de basculement de thème
+
+## Utilisation des Composants
+
+Pour utiliser ces composants dans les écrans ou d'autres composants :
+
+```tsx
+import Button from '../components/Button';
+import Input from '../components/Input';
+import ThemeToggleButton from '../components/ThemeToggleButton';
+
+function MonEcran() {
+  return (
+    <>
+      <Input placeholder="Entrez votre texte" />
+      <Button title="Soumettre" onPress={() => {}} />
+      <ThemeToggleButton />
+    </>
+  );
+}
+```
+
+## Conventions pour les Nouveaux Composants
+
+Lors de la création de nouveaux composants :
+
+1. Placer les nouveaux composants dans le dossier `src/components/`
+2. Utiliser PascalCase pour le nom du fichier et du composant
+3. Inclure les types TypeScript appropriés
+4. Maintenir la cohérence des styles avec les composants existants
+
