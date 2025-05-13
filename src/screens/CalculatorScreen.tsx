@@ -12,6 +12,7 @@ export default function CalculatorScreen() {
   const styles = getThemedStyles(theme);
   
   const [initial, setInitial] = useState("");
+  const [balance, setBalance] = useState("");
   const [final, setFinal] = useState("");
   const [reduction, setReduction] = useState("");
   const [result, setResult] = useState<CalculationResult | null>(null);
@@ -20,7 +21,8 @@ export default function CalculatorScreen() {
     const output = calculateIterations(
       parseFloat(initial),
       parseFloat(final),
-      parseFloat(reduction)
+      parseFloat(reduction),
+      balance ? parseFloat(balance) : undefined
     );
     setResult(output);
   };
@@ -30,6 +32,11 @@ export default function CalculatorScreen() {
       style={[styles.container, { backgroundColor: theme.colors.background }]} 
       contentContainerStyle={localStyles.scrollContent}
     >
+      <Input
+        label="Balance ($)"
+        value={balance}
+        onChangeText={setBalance}
+      />
       <Input
         label="Prix initial ($)"
         value={initial}

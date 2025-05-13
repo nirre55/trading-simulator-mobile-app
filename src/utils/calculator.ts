@@ -7,12 +7,16 @@ export type CalculationResult = {
   priceFloor?: number;
   priceCeil?: number;
   targetPrice?: number;
+  balance?: number;
+  allocationPerTrade?: number;
+  leverage?: number;
 };
 
 export function calculateIterations(
   initial: number,
   final: number,
-  reductionPercent: number
+  reductionPercent: number,
+  balance?: number
 ): CalculationResult {
   const reductionRate = reductionPercent / 100;
 
@@ -30,6 +34,15 @@ export function calculateIterations(
   const priceFloor = initial * Math.pow(1 - reductionRate, floor);
   const priceCeil = initial * Math.pow(1 - reductionRate, ceil);
 
+  // Calculer le montant alloué par trade
+  let allocationPerTrade = undefined;
+  if (balance && balance > 0 && ceil > 0) {
+    allocationPerTrade = balance / ceil;
+  }
+
+  // Calculer le levier
+  const leverage = Math.floor(100 / reductionPercent);
+  
   return {
     success: true,
     iterations,
@@ -37,6 +50,9 @@ export function calculateIterations(
     ceil,
     priceFloor,
     priceCeil,
-    targetPrice: final
+    targetPrice: final,
+    balance: balance && balance > 0 ? balance : undefined,
+    allocationPerTrade,
+    leverage
   };
 }

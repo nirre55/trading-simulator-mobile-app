@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { MaterialIcons, FontAwesome } from '@expo/vector-icons';
+import { MaterialIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { ThemeContext } from '../theme/ThemeContext';
 import { getThemedStyles } from '../styles/styles';
 import { CalculationResult as CalculationResultType } from '../utils/calculator';
@@ -77,6 +77,63 @@ const CalculationResultCard: React.FC<Props> = ({ result }) => {
           </Text>
         </View>
       </View>
+
+      {result.balance && result.allocationPerTrade && (
+        <View style={[styles.card, localStyles.allocationCard]}>
+          <View style={localStyles.cardHeader}>
+            <Ionicons name="wallet-outline" size={22} color={theme.colors.primary} />
+            <Text style={[localStyles.cardTitle, { color: theme.colors.text }]}>
+              Allocation des fonds
+            </Text>
+          </View>
+          <View style={[localStyles.divider, { backgroundColor: theme.colors.border }]} />
+          
+          <View style={localStyles.allocationContent}>
+            <View style={localStyles.allocationRow}>
+              <Text style={[localStyles.allocationLabel, { color: theme.colors.secondaryText }]}>
+                Balance totale:
+              </Text>
+              <Text style={[localStyles.allocationValue, { color: theme.colors.text }]}>
+                {result.balance.toFixed(2)} $
+              </Text>
+            </View>
+            
+            <View style={localStyles.allocationRow}>
+              <Text style={[localStyles.allocationLabel, { color: theme.colors.secondaryText }]}>
+                Nombre de trades:
+              </Text>
+              <Text style={[localStyles.allocationValue, { color: theme.colors.text }]}>
+                {result.ceil}
+              </Text>
+            </View>
+            
+            <View style={localStyles.allocationRow}>
+              <Text style={[localStyles.allocationLabel, { color: theme.colors.secondaryText }]}>
+                Montant par trade:
+              </Text>
+              <Text style={[localStyles.allocationValue, { color: theme.colors.primary, fontWeight: 'bold' }]}>
+                {result.allocationPerTrade.toFixed(2)} $
+              </Text>
+            </View>
+
+            <View style={[localStyles.divider, { backgroundColor: theme.colors.border, marginVertical: 8 }]} />
+            
+            <View style={localStyles.allocationRow}>
+              <Text style={[localStyles.allocationLabel, { color: theme.colors.secondaryText }]}>
+                Levier recommandé:
+              </Text>
+              <Text style={[localStyles.allocationValue, { color: theme.colors.primary, fontWeight: 'bold' }]}>
+                {result.leverage}x
+              </Text>
+            </View>
+            {result.leverage && (
+              <Text style={[styles.secondaryText, { fontSize: 12, marginTop: 5, fontStyle: 'italic' }]}>
+                Basé sur une réduction de {100/result.leverage}% par itération
+              </Text>
+            )}
+          </View>
+        </View>
+      )}
     </View>
   );
 };
@@ -86,6 +143,10 @@ const localStyles = StyleSheet.create({
     marginTop: 20,
   },
   mainCard: {
+    marginBottom: 15,
+  },
+  allocationCard: {
+    marginTop: 15,
     marginBottom: 15,
   },
   cardHeader: {
@@ -149,6 +210,20 @@ const localStyles = StyleSheet.create({
   errorText: {
     color: 'red',
     flex: 1,
+  },
+  allocationContent: {
+    paddingVertical: 8,
+  },
+  allocationRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 6,
+  },
+  allocationLabel: {
+    fontSize: 15,
+  },
+  allocationValue: {
+    fontSize: 15,
   }
 });
 
