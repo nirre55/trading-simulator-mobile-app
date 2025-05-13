@@ -1,11 +1,15 @@
-import React, { useState } from "react";
-import { View, Text } from "react-native";
+import React, { useState, useContext } from "react";
+import { View, Text, StyleSheet } from "react-native";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { calculateIterations } from "../utils/calculator";
-import { styles } from "../styles/styles";
+import { getThemedStyles } from "../styles/styles";
+import { ThemeContext } from "../theme/ThemeContext";
 
 export default function CalculatorScreen() {
+  const { theme } = useContext(ThemeContext);
+  const styles = getThemedStyles(theme);
+  
   const [initial, setInitial] = useState("");
   const [final, setFinal] = useState("");
   const [reduction, setReduction] = useState("");
@@ -38,3 +42,12 @@ export default function CalculatorScreen() {
     </View>
   );
 }
+
+const localStyles = StyleSheet.create({
+  container: {
+    position: "relative",
+  },
+  contentContainer: {
+    paddingTop: 10,
+  }
+});

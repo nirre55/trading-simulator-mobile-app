@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, TextInput } from "react-native";
-import { styles } from "../styles/styles";
+import { getThemedStyles } from "../styles/styles";
+import { ThemeContext } from "../theme/ThemeContext";
 
 type Props = {
   label: string;
@@ -9,6 +10,9 @@ type Props = {
 };
 
 export default function Input({ label, value, onChangeText }: Props) {
+  const { theme } = useContext(ThemeContext);
+  const styles = getThemedStyles(theme);
+  
   return (
     <View style={styles.inputContainer}>
       <Text style={styles.label}>{label}</Text>

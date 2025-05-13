@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { TouchableOpacity, Text } from "react-native";
-import { styles } from "../styles/styles";
+import { getThemedStyles } from "../styles/styles";
+import { ThemeContext } from "../theme/ThemeContext";
 
 type Props = {
   title: string;
@@ -8,6 +9,9 @@ type Props = {
 };
 
 export default function Button({ title, onPress }: Props) {
+  const { theme } = useContext(ThemeContext);
+  const styles = getThemedStyles(theme);
+  
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
       <Text style={styles.buttonText}>{title}</Text>
