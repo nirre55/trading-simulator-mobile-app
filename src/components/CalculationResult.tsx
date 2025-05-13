@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { MaterialIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
+import React, { useContext, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { MaterialIcons, FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { ThemeContext } from '../theme/ThemeContext';
 import { getThemedStyles } from '../styles/styles';
 import { CalculationResult as CalculationResultType } from '../utils/calculator';
@@ -18,6 +18,19 @@ const CalculationResultCard: React.FC<Props> = ({ result }) => {
     return (Math.round(num * 100) / 100).toFixed(2);
   };
 
+  // Génère les détails des itérations
+  const generateIterationDetails = () => {
+    if (!result.success || !result.iterationDetails) {
+      return [];
+    }
+    
+    return result.iterationDetails;
+  };
+
+  useEffect(() => {
+    // Effet pour traiter les données lorsque le résultat change
+  }, [result]);
+
   if (!result.success) {
     return (
       <View style={[styles.card, localStyles.errorCard]}>
@@ -28,6 +41,8 @@ const CalculationResultCard: React.FC<Props> = ({ result }) => {
       </View>
     );
   }
+
+  const iterationDetails = generateIterationDetails();
 
   return (
     <View style={localStyles.resultContainer}>
@@ -139,6 +154,71 @@ const CalculationResultCard: React.FC<Props> = ({ result }) => {
           </View>
         </View>
       )}
+
+      {/* Détails des itérations */}
+      {result.iterationDetails && result.iterationDetails.length > 0 ? (
+        <View style={[styles.card, localStyles.iterationsCard]}>
+          <View style={localStyles.cardHeader}>
+            <MaterialCommunityIcons name="table" size={22} color={theme.colors.primary} />
+            <Text style={[localStyles.cardTitle, { color: theme.colors.text }]}>
+              Détails des Itérations
+            </Text>
+          </View>
+          <View style={[localStyles.divider, { backgroundColor: theme.colors.border }]} />
+          
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
+            <View style={localStyles.tableContainer}>
+              {/* En-tête du tableau */}
+              <View style={localStyles.tableHeader}>
+                <View style={localStyles.tableHeaderCell}>
+                  <Text style={[localStyles.tableHeaderText, { color: theme.colors.text }]}>Itération</Text>
+                </View>
+                <View style={[localStyles.tableHeaderCell, localStyles.tableCellMiddle]}>
+                  <Text style={[localStyles.tableHeaderText, { color: theme.colors.text }]}>Prix d'entrée ($)</Text>
+                </View>
+                <View style={localStyles.tableHeaderCell}>
+                  <Text style={[localStyles.tableHeaderText, { color: theme.colors.text }]}>Prix de liquidation ($)</Text>
+                </View>
+              </View>
+              
+              {/* Lignes du tableau */}
+              {result.iterationDetails.map((detail, index) => (
+                <View 
+                  key={index} 
+                  style={[
+                    localStyles.tableRow, 
+                    index % 2 === 0 ? 
+                      { backgroundColor: theme.dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' } : 
+                      {}
+                  ]}
+                >
+                  <View style={localStyles.tableCell}>
+                    <Text style={[localStyles.tableCellText, { color: theme.colors.text }]}>
+                      {detail.iteration}
+                    </Text>
+                  </View>
+                  <View style={[localStyles.tableCell, localStyles.tableCellMiddle]}>
+                    <Text style={[localStyles.tableCellText, { color: theme.colors.text }]}>
+                      {roundToTwoDecimals(detail.entryPrice)}
+                    </Text>
+                  </View>
+                  <View style={localStyles.tableCell}>
+                    <Text style={[localStyles.tableCellText, { color: theme.colors.text }]}>
+                      {roundToTwoDecimals(detail.liquidationPrice)}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
+      ) : (
+        <View style={[styles.card, { padding: 10, marginVertical: 10 }]}>
+          <Text style={{ color: theme.colors.secondaryText, fontStyle: 'italic' }}>
+            Aucun détail d'itération disponible.
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -152,6 +232,9 @@ const localStyles = StyleSheet.create({
   },
   allocationCard: {
     marginTop: 15,
+    marginBottom: 15,
+  },
+  iterationsCard: {
     marginBottom: 15,
   },
   cardHeader: {
@@ -229,6 +312,50 @@ const localStyles = StyleSheet.create({
   },
   allocationValue: {
     fontSize: 15,
+  },
+  tableContainer: {
+    marginVertical: 10,
+    width: '100%',
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    paddingBottom: 8,
+  },
+  tableHeaderCell: {
+    flex: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    width: 120,
+    alignItems: 'center',
+  },
+  tableHeaderText: {
+    fontWeight: 'bold',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#e0e0e0',
+  },
+  tableCell: {
+    flex: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 10,
+    width: 120,
+    alignItems: 'center',
+  },
+  tableCellMiddle: {
+    borderLeftWidth: 0.5,
+    borderRightWidth: 0.5,
+    borderLeftColor: '#e0e0e0',
+    borderRightColor: '#e0e0e0',
+  },
+  tableCellText: {
+    fontSize: 14,
+    textAlign: 'center',
   }
 });
 

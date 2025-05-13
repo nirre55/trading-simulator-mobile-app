@@ -10,6 +10,11 @@ export type CalculationResult = {
   balance?: number;
   allocationPerTrade?: number;
   leverage?: number;
+  iterationDetails?: Array<{
+    iteration: number;
+    entryPrice: number;
+    liquidationPrice: number;
+  }>;
 };
 
 export function calculateIterations(
@@ -20,7 +25,8 @@ export function calculateIterations(
 ): CalculationResult {
   const reductionRate = reductionPercent / 100;
 
-  if (initial <= 0 || final <= 0 || reductionRate <= 0 || final >= initial) {
+  if (isNaN(initial) || isNaN(final) || isNaN(reductionPercent) || 
+      initial <= 0 || final <= 0 || reductionRate <= 0 || final >= initial) {
     return {
       success: false,
       error: "Erreur : Les valeurs doivent être valides et le prix final doit être inférieur au prix initial."
@@ -43,6 +49,20 @@ export function calculateIterations(
   // Calculer le levier
   const leverage = Math.floor(100 / reductionPercent);
   
+  // Générer les détails des itérations
+  const iterationDetails = [];
+  let currentPrice = initial;
+  
+  for (let i = 1; i <= ceil; i++) {
+    const nextPrice = currentPrice * (1 - reductionRate);
+    iterationDetails.push({
+      iteration: i,
+      entryPrice: currentPrice,
+      liquidationPrice: nextPrice
+    });
+    currentPrice = nextPrice;
+  }
+  
   return {
     success: true,
     iterations,
@@ -53,6 +73,7 @@ export function calculateIterations(
     targetPrice: final,
     balance: balance && balance > 0 ? balance : undefined,
     allocationPerTrade,
-    leverage
+    leverage,
+    iterationDetails
   };
 }

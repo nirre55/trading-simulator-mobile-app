@@ -27,6 +27,7 @@ export default function CalculatorScreen() {
       parseFloat(reduction),
       balance ? parseFloat(balance) : undefined
     );
+    
     setResult(output);
   };
 
