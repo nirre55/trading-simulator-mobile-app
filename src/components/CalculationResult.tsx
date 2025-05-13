@@ -13,6 +13,11 @@ const CalculationResultCard: React.FC<Props> = ({ result }) => {
   const { theme } = useContext(ThemeContext);
   const styles = getThemedStyles(theme);
 
+  // Fonction pour arrondir à 2 décimales
+  const roundToTwoDecimals = (num: number): string => {
+    return (Math.round(num * 100) / 100).toFixed(2);
+  };
+
   if (!result.success) {
     return (
       <View style={[styles.card, localStyles.errorCard]}>
@@ -128,7 +133,7 @@ const CalculationResultCard: React.FC<Props> = ({ result }) => {
             </View>
             {result.leverage && (
               <Text style={[styles.secondaryText, { fontSize: 12, marginTop: 5, fontStyle: 'italic' }]}>
-                Basé sur une réduction de {100/result.leverage}% par itération
+                Basé sur une réduction de {roundToTwoDecimals(100/result.leverage)}% par itération
               </Text>
             )}
           </View>
