@@ -1,7 +1,8 @@
 import React, { useState, useContext } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import TargetInput from "../components/TargetInput";
 import CalculationResultCard from "../components/CalculationResult";
 import { calculateIterations, CalculationResult } from "../utils/calculator";
 import { getThemedStyles } from "../styles/styles";
@@ -15,6 +16,8 @@ export default function CalculatorScreen() {
   const [balance, setBalance] = useState("");
   const [final, setFinal] = useState("");
   const [reduction, setReduction] = useState("");
+  const [target, setTarget] = useState("");
+  const [targetIsPercentage, setTargetIsPercentage] = useState(true);
   const [result, setResult] = useState<CalculationResult | null>(null);
 
   const handleCalculate = () => {
@@ -25,6 +28,11 @@ export default function CalculatorScreen() {
       balance ? parseFloat(balance) : undefined
     );
     setResult(output);
+  };
+
+  const toggleTargetType = () => {
+    setTargetIsPercentage(!targetIsPercentage);
+    setTarget(""); // Réinitialiser la valeur lors du changement de type
   };
 
   return (
@@ -52,6 +60,15 @@ export default function CalculatorScreen() {
         value={reduction}
         onChangeText={setReduction}
       />
+
+      <TargetInput
+        value={target}
+        onChangeText={setTarget}
+        isPercentage={targetIsPercentage}
+        onToggle={toggleTargetType}
+        theme={theme}
+      />
+
       <Button title="Calculer" onPress={handleCalculate} />
       {result && <CalculationResultCard result={result} />}
     </ScrollView>
