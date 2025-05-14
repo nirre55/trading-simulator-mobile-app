@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Switch } from 'react-native';
 import { MaterialIcons, FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { ThemeContext } from '../theme/ThemeContext';
 import { getThemedStyles } from '../styles/styles';
@@ -12,6 +12,7 @@ type Props = {
 const CalculationResultCard: React.FC<Props> = ({ result }) => {
   const { theme } = useContext(ThemeContext);
   const styles = getThemedStyles(theme);
+  const [isRecoveryEnabled, setIsRecoveryEnabled] = useState(false);
 
   // Fonction pour arrondir à 2 décimales
   const roundToTwoDecimals = (num: number): string => {
@@ -158,11 +159,25 @@ const CalculationResultCard: React.FC<Props> = ({ result }) => {
       {/* Détails des itérations */}
       {result.iterationDetails && result.iterationDetails.length > 0 ? (
         <View style={[styles.card, localStyles.iterationsCard]}>
-          <View style={localStyles.cardHeader}>
-            <MaterialCommunityIcons name="table" size={22} color={theme.colors.primary} />
-            <Text style={[localStyles.cardTitle, { color: theme.colors.text }]}>
-              Détails des Itérations
-            </Text>
+          <View style={localStyles.cardHeaderWithSwitch}>
+            <View style={localStyles.cardHeader}>
+              <MaterialCommunityIcons name="table" size={22} color={theme.colors.primary} />
+              <Text style={[localStyles.cardTitle, { color: theme.colors.text }]}>
+                Détails des Itérations
+              </Text>
+            </View>
+            <View style={localStyles.switchContainer}>
+              <Text style={[styles.secondaryText, { marginRight: 8, fontSize: 13 }]}>
+                Récupération des pertes
+              </Text>
+              <Switch
+                value={isRecoveryEnabled}
+                onValueChange={setIsRecoveryEnabled}
+                trackColor={{ false: theme.dark ? '#444' : '#d3d3d3', true: theme.colors.primary }}
+                thumbColor={isRecoveryEnabled ? '#fff' : '#f4f3f4'}
+                ios_backgroundColor={theme.dark ? '#444' : '#d3d3d3'}
+              />
+            </View>
           </View>
           <View style={[localStyles.divider, { backgroundColor: theme.colors.border }]} />
           
@@ -383,7 +398,20 @@ const localStyles = StyleSheet.create({
   tableCellText: {
     fontSize: 14,
     textAlign: 'center',
-  }
+  },
+  cardHeaderWithSwitch: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
+    flexWrap: 'wrap',
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5,
+    marginBottom: 5,
+  },
 });
 
 export default CalculationResultCard; 
