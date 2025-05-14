@@ -19,6 +19,34 @@ const CalculationResultCard: React.FC<Props> = ({ result }) => {
     return (Math.round(num * 100) / 100).toFixed(2);
   };
 
+  // Fonction pour calculer le profit avec ou sans récupération des pertes
+  const calculateProfit = (detail: any) => {
+    if (!detail.profit) return '-';
+    
+    let profit = detail.profit;
+    
+    // Si la récupération des pertes est activée, on ajoute le montant par trade * (numéro d'itération - 1)
+    if (isRecoveryEnabled && result.allocationPerTrade && detail.iteration > 1) {
+      profit += result.allocationPerTrade * (detail.iteration - 1);
+    }
+    
+    return roundToTwoDecimals(profit);
+  };
+
+  // Fonction pour déterminer la couleur du profit
+  const getProfitColor = (detail: any) => {
+    if (!detail.profit) return theme.colors.text;
+    
+    let profit = detail.profit;
+    
+    // Calculer le profit avec récupération si nécessaire
+    if (isRecoveryEnabled && result.allocationPerTrade && detail.iteration > 1) {
+      profit += result.allocationPerTrade * (detail.iteration - 1);
+    }
+    
+    return profit > 0 ? 'green' : profit < 0 ? 'red' : theme.colors.text;
+  };
+
   // Génère les détails des itérations
   const generateIterationDetails = () => {
     if (!result.success || !result.iterationDetails) {
@@ -181,6 +209,19 @@ const CalculationResultCard: React.FC<Props> = ({ result }) => {
           </View>
           <View style={[localStyles.divider, { backgroundColor: theme.colors.border }]} />
           
+          {isRecoveryEnabled && (
+            <View style={[
+              localStyles.recoveryInfoContainer, 
+              { backgroundColor: theme.dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }
+            ]}>
+              <Text style={[styles.secondaryText, { fontStyle: 'italic', fontSize: 12 }]}>
+                Avec récupération des pertes, le profit à chaque itération inclut le montant{' '}
+                <Text style={{ fontWeight: 'bold' }}>{roundToTwoDecimals(result.allocationPerTrade || 0)}$</Text>{' '}
+                multiplié par (numéro d'itération - 1).
+              </Text>
+            </View>
+          )}
+          
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
             <View style={localStyles.tableContainer}>
               {/* En-tête du tableau */}
@@ -231,17 +272,9 @@ const CalculationResultCard: React.FC<Props> = ({ result }) => {
                   <View style={[localStyles.tableCell, localStyles.tableCellMiddle]}>
                     <Text style={[
                       localStyles.tableCellText, 
-                      { 
-                        color: detail.profit 
-                          ? detail.profit > 0 
-                            ? 'green' 
-                            : detail.profit < 0 
-                              ? 'red' 
-                              : theme.colors.text
-                          : theme.colors.text 
-                      }
+                      { color: getProfitColor(detail) }
                     ]}>
-                      {detail.profit ? roundToTwoDecimals(detail.profit) : '-'}
+                      {calculateProfit(detail)}
                     </Text>
                   </View>
                   <View style={localStyles.tableCell}>
@@ -411,6 +444,12 @@ const localStyles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 5,
     marginBottom: 5,
+  },
+  recoveryInfoContainer: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    marginBottom: 10,
+    borderRadius: 4,
   },
 });
 
