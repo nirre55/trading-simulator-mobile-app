@@ -14,6 +14,8 @@ export type CalculationResult = {
     iteration: number;
     entryPrice: number;
     liquidationPrice: number;
+    exitPrice?: number;
+    profit?: number;
   }>;
 };
 
@@ -21,7 +23,9 @@ export function calculateIterations(
   initial: number,
   final: number,
   reductionPercent: number,
-  balance?: number
+  balance?: number,
+  targetValue?: number,
+  targetIsPercentage?: boolean
 ): CalculationResult {
   const reductionRate = reductionPercent / 100;
 
@@ -55,10 +59,33 @@ export function calculateIterations(
   
   for (let i = 1; i <= ceil; i++) {
     const nextPrice = currentPrice * (1 - reductionRate);
+    
+    // Calculer le prix de sortie
+    let exitPrice = undefined;
+    let profit = undefined;
+    
+    if (targetValue !== undefined) {
+      if (targetIsPercentage) {
+        // Si Target est en pourcentage, calculer le prix de sortie comme prix d'entrée * (1 + target/100)
+        exitPrice = currentPrice * (1 + targetValue / 100);
+      } else {
+        // Si Target est en valeur absolue, utiliser directement cette valeur
+        exitPrice = targetValue;
+      }
+      
+      // Calculer le profit si on a le prix de sortie et le montant par trade
+      if (allocationPerTrade && leverage) {
+        // Profit = (Prix Sortie - Prix entrée) * (Montant Par Trade * Levier / Prix entrée)
+        profit = (exitPrice - currentPrice) * (allocationPerTrade * leverage / currentPrice);
+      }
+    }
+    
     iterationDetails.push({
       iteration: i,
       entryPrice: currentPrice,
-      liquidationPrice: nextPrice
+      liquidationPrice: nextPrice,
+      exitPrice,
+      profit
     });
     currentPrice = nextPrice;
   }

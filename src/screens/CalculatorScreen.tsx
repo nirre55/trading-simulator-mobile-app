@@ -25,7 +25,9 @@ export default function CalculatorScreen() {
       parseFloat(initial),
       parseFloat(final),
       parseFloat(reduction),
-      balance ? parseFloat(balance) : undefined
+      balance ? parseFloat(balance) : undefined,
+      target ? parseFloat(target) : undefined,
+      targetIsPercentage
     );
     
     setResult(output);

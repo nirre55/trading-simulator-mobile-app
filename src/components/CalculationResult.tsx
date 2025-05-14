@@ -176,6 +176,12 @@ const CalculationResultCard: React.FC<Props> = ({ result }) => {
                 <View style={[localStyles.tableHeaderCell, localStyles.tableCellMiddle]}>
                   <Text style={[localStyles.tableHeaderText, { color: theme.colors.text }]}>Prix d'entrée ($)</Text>
                 </View>
+                <View style={[localStyles.tableHeaderCell, localStyles.tableCellMiddle]}>
+                  <Text style={[localStyles.tableHeaderText, { color: theme.colors.text }]}>Prix de sortie ($)</Text>
+                </View>
+                <View style={[localStyles.tableHeaderCell, localStyles.tableCellMiddle]}>
+                  <Text style={[localStyles.tableHeaderText, { color: theme.colors.text }]}>Profit ($)</Text>
+                </View>
                 <View style={localStyles.tableHeaderCell}>
                   <Text style={[localStyles.tableHeaderText, { color: theme.colors.text }]}>Prix de liquidation ($)</Text>
                 </View>
@@ -200,6 +206,27 @@ const CalculationResultCard: React.FC<Props> = ({ result }) => {
                   <View style={[localStyles.tableCell, localStyles.tableCellMiddle]}>
                     <Text style={[localStyles.tableCellText, { color: theme.colors.text }]}>
                       {roundToTwoDecimals(detail.entryPrice)}
+                    </Text>
+                  </View>
+                  <View style={[localStyles.tableCell, localStyles.tableCellMiddle]}>
+                    <Text style={[localStyles.tableCellText, { color: theme.colors.text }]}>
+                      {detail.exitPrice ? roundToTwoDecimals(detail.exitPrice) : '-'}
+                    </Text>
+                  </View>
+                  <View style={[localStyles.tableCell, localStyles.tableCellMiddle]}>
+                    <Text style={[
+                      localStyles.tableCellText, 
+                      { 
+                        color: detail.profit 
+                          ? detail.profit > 0 
+                            ? 'green' 
+                            : detail.profit < 0 
+                              ? 'red' 
+                              : theme.colors.text
+                          : theme.colors.text 
+                      }
+                    ]}>
+                      {detail.profit ? roundToTwoDecimals(detail.profit) : '-'}
                     </Text>
                   </View>
                   <View style={localStyles.tableCell}>
