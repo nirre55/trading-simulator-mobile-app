@@ -3,6 +3,7 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerI
 import HomeScreen from "../screens/HomeScreen";
 import CalculatorScreen from "../screens/CalculatorScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import AboutScreen from "../screens/AboutScreen";
 import { ThemeContext } from "../theme/ThemeContext";
 import { StyleSheet, View, ViewStyle } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
@@ -25,6 +26,11 @@ const mainScreens = [
 ];
 
 const bottomScreens = [
+  {
+    name: "À propos",
+    component: AboutScreen,
+    icon: "information-circle" as IconName
+  },
   {
     name: "Paramètres",
     component: SettingsScreen,
