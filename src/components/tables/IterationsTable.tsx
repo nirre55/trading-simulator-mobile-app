@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Switch } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ThemeContext } from '../../theme/ThemeContext';
@@ -15,46 +15,60 @@ type IterationDetail = {
 type Props = {
   iterationDetails: IterationDetail[];
   allocationPerTrade?: number;
+  leverage?: number;
 };
 
 const IterationsTable: React.FC<Props> = ({ 
   iterationDetails,
-  allocationPerTrade
+  allocationPerTrade,
+  leverage
 }) => {
   const { theme } = useContext(ThemeContext);
   const styles = getThemedStyles(theme);
   const [isRecoveryEnabled, setIsRecoveryEnabled] = useState(false);
+  const [adjustedDetails, setAdjustedDetails] = useState<IterationDetail[]>([]);
+  
+  // Effet pour ajuster les détails des itérations lorsque la récupération des pertes est activée
+  useEffect(() => {
+    if (isRecoveryEnabled) {
+      const newDetails = iterationDetails.map(detail => {
+        const newDetail = { ...detail };
+        
+        // Calculer le profit avec récupération des pertes
+        if (newDetail.profit !== undefined && allocationPerTrade && newDetail.iteration > 1) {
+          const recoveryAmount = allocationPerTrade * (detail.iteration - 1);
+          newDetail.profit = newDetail.profit + recoveryAmount;
+          
+          // Ajuster le prix de sortie en fonction du nouveau profit
+          if (newDetail.exitPrice !== undefined && leverage && newDetail.entryPrice) {
+            // Formule: prix de sortie = ((profit * prix entrée) / (montant par trade * levier)) + prix entrée
+            newDetail.exitPrice = ((newDetail.profit * newDetail.entryPrice) / 
+              (allocationPerTrade * leverage)) + newDetail.entryPrice;
+          }
+        }
+        
+        return newDetail;
+      });
+      
+      setAdjustedDetails(newDetails);
+    } else {
+      setAdjustedDetails(iterationDetails);
+    }
+  }, [isRecoveryEnabled, iterationDetails, allocationPerTrade, leverage]);
   
   // Fonction pour arrondir à 2 décimales
   const roundToTwoDecimals = (num: number): string => {
     return (Math.round(num * 100) / 100).toFixed(2);
   };
   
-  // Fonction pour calculer le profit avec ou sans récupération des pertes
-  const calculateProfit = (detail: IterationDetail) => {
-    if (!detail.profit) return '-';
-    
-    let profit = detail.profit;
-    
-    // Si la récupération des pertes est activée, on ajoute le montant par trade * (numéro d'itération - 1)
-    if (isRecoveryEnabled && allocationPerTrade && detail.iteration > 1) {
-      profit += allocationPerTrade * (detail.iteration - 1);
-    }
-    
-    return roundToTwoDecimals(profit);
+  // Fonction pour obtenir les détails à afficher (originaux ou ajustés)
+  const getDetailsToDisplay = () => {
+    return isRecoveryEnabled ? adjustedDetails : iterationDetails;
   };
-
+  
   // Fonction pour déterminer la couleur du profit
-  const getProfitColor = (detail: IterationDetail) => {
-    if (!detail.profit) return theme.colors.text;
-    
-    let profit = detail.profit;
-    
-    // Calculer le profit avec récupération si nécessaire
-    if (isRecoveryEnabled && allocationPerTrade && detail.iteration > 1) {
-      profit += allocationPerTrade * (detail.iteration - 1);
-    }
-    
+  const getProfitColor = (profit?: number) => {
+    if (profit === undefined) return theme.colors.text;
     return profit > 0 ? 'green' : profit < 0 ? 'red' : theme.colors.text;
   };
   
@@ -98,9 +112,9 @@ const IterationsTable: React.FC<Props> = ({
           { backgroundColor: theme.dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }
         ]}>
           <Text style={[styles.secondaryText, { fontStyle: 'italic', fontSize: 12 }]}>
-            Avec récupération des pertes, le profit à chaque itération inclut le montant{' '}
+            Avec récupération des pertes, le profit inclut le montant{' '}
             <Text style={{ fontWeight: 'bold' }}>{roundToTwoDecimals(allocationPerTrade)}$</Text>{' '}
-            multiplié par (numéro d'itération - 1).
+            multiplié par (numéro d'itération - 1). Le prix de sortie est également ajusté pour atteindre ce profit.
           </Text>
         </View>
       )}
@@ -127,7 +141,7 @@ const IterationsTable: React.FC<Props> = ({
           </View>
           
           {/* Lignes du tableau */}
-          {iterationDetails.map((detail, index) => (
+          {getDetailsToDisplay().map((detail, index) => (
             <View 
               key={index} 
               style={[
@@ -155,9 +169,9 @@ const IterationsTable: React.FC<Props> = ({
               <View style={[localStyles.tableCell, localStyles.tableCellMiddle]}>
                 <Text style={[
                   localStyles.tableCellText, 
-                  { color: getProfitColor(detail) }
+                  { color: getProfitColor(detail.profit) }
                 ]}>
-                  {calculateProfit(detail)}
+                  {detail.profit !== undefined ? roundToTwoDecimals(detail.profit) : '-'}
                 </Text>
               </View>
               <View style={localStyles.tableCell}>

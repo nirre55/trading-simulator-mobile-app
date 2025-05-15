@@ -62,6 +62,7 @@ const CalculationResultCard: React.FC<Props> = ({ result }) => {
         <IterationsTable 
           iterationDetails={result.iterationDetails} 
           allocationPerTrade={result.allocationPerTrade}
+          leverage={result.leverage}
         />
       )}
     </View>

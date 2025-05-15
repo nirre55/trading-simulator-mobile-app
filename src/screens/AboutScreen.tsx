@@ -77,6 +77,16 @@ export default function AboutScreen() {
           multiplié par (numéro d'itération - 1). Cette stratégie est utile pour compenser 
           les pertes accumulées lors des itérations précédentes.
         </Text>
+        
+        <Text style={[styles.text, localStyles.paragraph]}>
+          Lorsque cette option est activée et que le Target est en pourcentage, le prix de sortie 
+          est également ajusté selon la formule :
+          {'\n\n'}
+          Prix de sortie = ((Profit × Prix entrée) / (Montant par trade × Levier)) + Prix entrée
+          {'\n\n'}
+          Cela permet de calculer le prix exact nécessaire pour atteindre le profit souhaité avec 
+          la récupération des pertes.
+        </Text>
       </View>
       
       <View style={[styles.card, localStyles.section]}>
