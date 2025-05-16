@@ -1,0 +1,123 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Voici une **liste des meilleures pratiques** pour structurer un projet **React Native** de manière propre, évolutive et maintenable :
+
+---
+
+## 🗂️ 1. **Architecture de dossiers claire**
+
+Utilise une structure modulaire basée sur les fonctionnalités (feature-based) :
+
+```
+/src
+  /assets          // images, fonts, icons, etc.
+  /components      // composants réutilisables (Button, Modal, etc.)
+  /features        // chaque fonctionnalité isolée
+    /auth
+      AuthScreen.tsx
+      authSlice.ts
+      authService.ts
+    /profile
+      ProfileScreen.tsx
+  /navigation      // stack/tab navigators
+  /services        // API, Firebase, etc.
+  /store           // Redux/Zustand/MobX store
+  /utils           // fonctions utilitaires, helpers
+  /hooks           // custom hooks
+  /constants       // couleurs, tailles, textes fixes
+  /theme           // theming centralisé
+App.tsx
+```
+
+---
+
+## 🧱 2. **Découpage logique par fonctionnalités**
+
+Évite un dossier "screens" géant. Regroupe les fichiers liés à une même fonctionnalité dans un dossier (composants, logique, styles, etc.).
+
+---
+
+## 🧑‍🎨 3. **Design System & Thème global**
+
+* Centralise les couleurs, polices, tailles, etc. dans `/theme`.
+* Utilise un `ThemeProvider` (comme `styled-components` ou `NativeWind` / `TailwindCSS` via `tailwind-rn`).
+
+---
+
+## 🧰 4. **Utilisation de TypeScript**
+
+* Typage strict des props, hooks, services.
+* Crée des types globaux partagés dans `/types`.
+
+---
+
+## 🧭 5. **Navigation bien organisée**
+
+* Regroupe tous les navigators dans `/navigation`.
+* Utilise `react-navigation` avec des types (`createStackNavigator<ParamList>()`).
+
+---
+
+## 🔁 6. **Gestion d’état bien pensée**
+
+Choisis une solution en fonction de la taille de ton app :
+
+* Simple : `useState`, `useContext`
+* Moyen : `Zustand`, `Jotai`
+* Grand : `Redux Toolkit`, `MobX`
+
+Structure dans `/store` ou `/features/xxx/xxxSlice.ts`.
+
+---
+
+## 🔌 7. **Appels API organisés**
+
+* Regroupe les appels dans `/services` ou `/features/xxx/xxxService.ts`.
+* Utilise `axios` ou `fetch` avec des interceptors pour l’auth, erreurs, etc.
+
+---
+
+## 🧪 8. **Tests**
+
+* Utilise `jest` + `@testing-library/react-native`.
+* Place les tests à côté des composants : `MyComponent.test.tsx`.
+
+---
+
+## 🛠️ 9. **Scripts et configuration**
+
+* Gère les environnements avec `react-native-config`.
+* Crée des scripts utiles (lint, format, build) dans `package.json`.
+
+---
+
+## 📦 10. **Dépendances et bonnes pratiques**
+
+* Suis les versions recommandées de React Native.
+* N’utilise que des librairies bien maintenues.
+* Centralise les versions des dépendances dans `package.json`.
+
+---
+
+## ✅ 11. **Linting & Formatage**
+
+* ESLint + Prettier + Husky pour le code propre.
+* Exemple de config :
+
+  ```bash
+  npx eslint . --fix
+  npx prettier --write .
+  ```
+
+---
+
+## 🔐 12. **Sécurité & Sensible**
+
+* Stocke les clés API avec `react-native-dotenv` ou `react-native-config`.
+* Ne commit jamais `.env`.
+
+
+

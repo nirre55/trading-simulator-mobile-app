@@ -1,15 +1,17 @@
 import React, { useContext } from "react";
-import { View, Text, TextInput } from "react-native";
+import { View, Text, TextInput, TextInputProps } from "react-native";
 import { getThemedStyles } from "../styles/styles";
-import { ThemeContext } from "../theme/ThemeContext";
+import { ThemeContext } from "../contexts/ThemeContext";
 
 type Props = {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
-};
+  isError?: boolean;
+  errorMessage?: string;
+} & TextInputProps;
 
-export default function Input({ label, value, onChangeText }: Props) {
+export default function Input({ label, value, onChangeText, isError, errorMessage, ...props }: Props) {
   const { theme } = useContext(ThemeContext);
   const styles = getThemedStyles(theme);
   
@@ -17,11 +19,15 @@ export default function Input({ label, value, onChangeText }: Props) {
     <View style={styles.inputContainer}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
-        style={styles.input}
+        style={isError ? styles.inputError : styles.input}
         value={value}
         onChangeText={onChangeText}
-        keyboardType="numeric"
+        placeholderTextColor={theme.colors.secondaryText}
+        {...props}
       />
+      {isError && errorMessage && (
+        <Text style={{ color: theme.colors.errorText, marginTop: 4 }}>{errorMessage}</Text>
+      )}
     </View>
   );
 }

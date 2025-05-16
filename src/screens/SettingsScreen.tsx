@@ -1,31 +1,46 @@
 import React, { useContext } from "react";
-import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity } from "react-native";
-import { ThemeContext } from "../theme/ThemeContext";
+import { View, Text, ScrollView, Switch, TouchableOpacity } from "react-native";
+import { ThemeContext } from "../contexts/ThemeContext";
 import { getThemedStyles } from "../styles/styles";
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from "react-i18next";
+import LanguageSelector from "../components/LanguageSelector";
+import Constants from 'expo-constants';
 
 export default function SettingsScreen() {
   const { theme, isDark, toggleTheme } = useContext(ThemeContext);
   const styles = getThemedStyles(theme);
+  const { t } = useTranslation();
+
+  const appVersion = Constants.expoConfig?.version || "N/A";
 
   return (
     <ScrollView 
-      style={[styles.container, { backgroundColor: theme.colors.background }]} 
-      contentContainerStyle={localStyles.contentContainer}
+      style={styles.container}
+      contentContainerStyle={styles.settingsContentContainer}
     >
-      <View style={localStyles.section}>
-        <Text style={[localStyles.sectionTitle, { color: theme.colors.text }]}>
-          Apparence
+      <View style={styles.settingsSection}>
+        <Text style={styles.settingsSectionTitle}>
+          {t('settings.language')}
         </Text>
-        <View style={[localStyles.optionRow, { borderColor: theme.colors.border }]}>
-          <View style={localStyles.optionInfo}>
+        <View style={styles.settingsOptionContainer}>
+          <LanguageSelector />
+        </View>
+      </View>
+
+      <View style={styles.settingsSection}>
+        <Text style={styles.settingsSectionTitle}>
+          {t('settings.theme')}
+        </Text>
+        <View style={styles.settingsOptionRow}>
+          <View style={styles.settingsOptionInfo}>
             <Ionicons 
               name={isDark ? "moon" : "sunny"} 
               size={22} 
               color={theme.colors.primary} 
-              style={localStyles.optionIcon} 
+              style={styles.settingsOptionIcon} 
             />
-            <Text style={[styles.text, { flex: 1 }]}>{isDark ? "Mode Sombre" : "Mode Clair"}</Text>
+            <Text style={[styles.text, { flex: 1 }]}>{t('settings.darkMode')}</Text>
           </View>
           <Switch
             value={isDark}
@@ -37,78 +52,23 @@ export default function SettingsScreen() {
         </View>
       </View>
 
-      <View style={localStyles.section}>
-        <Text style={[localStyles.sectionTitle, { color: theme.colors.text }]}>
-          Calculateur
+      <View style={styles.settingsSection}>
+        <Text style={styles.settingsSectionTitle}>
+          {t('navigation.about')}
         </Text>
-        <TouchableOpacity 
-          style={[localStyles.optionRow, { borderColor: theme.colors.border }]}
-        >
-          <View style={localStyles.optionInfo}>
-            <Ionicons 
-              name="calculator" 
-              size={22} 
-              color={theme.colors.primary} 
-              style={localStyles.optionIcon} 
-            />
-            <Text style={[styles.text, { flex: 1 }]}>Paramètres par défaut</Text>
-          </View>
-          <Ionicons 
-            name="chevron-forward" 
-            size={20} 
-            color={theme.colors.secondaryText} 
-          />
-        </TouchableOpacity>
-      </View>
-
-      <View style={localStyles.section}>
-        <Text style={[localStyles.sectionTitle, { color: theme.colors.text }]}>
-          À propos
-        </Text>
-        <View style={[localStyles.optionRow, { borderColor: theme.colors.border }]}>
-          <View style={localStyles.optionInfo}>
+        <View style={styles.settingsOptionRow}>
+          <View style={styles.settingsOptionInfo}>
             <Ionicons 
               name="information-circle" 
               size={22} 
               color={theme.colors.primary} 
-              style={localStyles.optionIcon} 
+              style={styles.settingsOptionIcon} 
             />
-            <Text style={[styles.text, { flex: 1 }]}>Version</Text>
+            <Text style={[styles.text, { flex: 1 }]}>{t('settings.version')}</Text>
           </View>
-          <Text style={[styles.secondaryText]}>1.0.0</Text>
+          <Text style={[styles.secondaryText]}>{appVersion}</Text>
         </View>
       </View>
     </ScrollView>
   );
-}
-
-const localStyles = StyleSheet.create({
-  contentContainer: {
-    paddingBottom: 30,
-  },
-  section: {
-    marginTop: 20,
-    marginHorizontal: 15,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  optionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    paddingHorizontal: 5,
-    borderBottomWidth: 0.5,
-  },
-  optionInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  optionIcon: {
-    marginRight: 10,
-  }
-}); 
+} 

@@ -1,8 +1,9 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { ThemeContext } from '../../theme/ThemeContext';
+import { ThemeContext } from '../../contexts/ThemeContext';
 import { getThemedStyles } from '../../styles/styles';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   message: string;
@@ -11,33 +12,16 @@ type Props = {
 const ErrorCard: React.FC<Props> = ({ message }) => {
   const { theme } = useContext(ThemeContext);
   const styles = getThemedStyles(theme);
+  const { t } = useTranslation();
   
   return (
-    <View style={[styles.card, localStyles.errorCard]}>
-      <View style={localStyles.iconContainer}>
-        <MaterialIcons name="error" size={24} color="red" />
+    <View style={[styles.card, styles.errorCard]}>
+      <View style={styles.errorIconContainer}>
+        <MaterialIcons name="error" size={24} color={theme.colors.errorIcon} />
       </View>
-      <Text style={[styles.text, localStyles.errorText]}>{message}</Text>
+      <Text style={styles.errorTextStyle}>{message}</Text>
     </View>
   );
 };
-
-const localStyles = StyleSheet.create({
-  errorCard: {
-    marginTop: 20,
-    backgroundColor: 'rgba(255, 0, 0, 0.1)',
-    borderLeftWidth: 4,
-    borderLeftColor: 'red',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconContainer: {
-    marginRight: 10,
-  },
-  errorText: {
-    color: 'red',
-    flex: 1,
-  },
-});
 
 export default ErrorCard; 

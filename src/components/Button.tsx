@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { TouchableOpacity, Text } from "react-native";
 import { getThemedStyles } from "../styles/styles";
-import { ThemeContext } from "../theme/ThemeContext";
+import { ThemeContext } from "../contexts/ThemeContext";
 
 type Props = {
   title: string;

@@ -1,158 +1,93 @@
 import React, { useContext } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { ThemeContext } from "../theme/ThemeContext";
+import { View, Text, ScrollView } from "react-native";
+import { ThemeContext } from "../contexts/ThemeContext";
 import { getThemedStyles } from "../styles/styles";
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from "react-i18next";
 
 export default function AboutScreen() {
   const { theme } = useContext(ThemeContext);
   const styles = getThemedStyles(theme);
+  const { t } = useTranslation();
 
   return (
     <ScrollView 
-      style={[styles.container, { backgroundColor: theme.colors.background }]} 
-      contentContainerStyle={localStyles.contentContainer}
+      style={styles.container}
+      contentContainerStyle={styles.aboutContentContainer}
     >
-      <View style={[styles.card, localStyles.section]}>
-        <View style={localStyles.sectionHeader}>
+      <View style={[styles.card, styles.aboutSection]}>
+        <View style={styles.aboutSectionHeader}>
           <Ionicons 
             name="calculator" 
             size={24} 
             color={theme.colors.primary} 
-            style={localStyles.sectionIcon} 
+            style={styles.aboutSectionIcon} 
           />
-          <Text style={[localStyles.sectionTitle, { color: theme.colors.text }]}>
-            Calculateur d'Itérations
+          <Text style={styles.aboutSectionTitle}>
+            {t('calculator.title')}
           </Text>
         </View>
         
-        <Text style={[styles.text, localStyles.paragraph]}>
-          Le calculateur d'itérations est un outil qui permet de planifier une stratégie d'achat progressif 
-          sur un actif dont le prix baisse régulièrement. Il calcule le nombre d'achats nécessaires pour 
-          atteindre le prix cible final.
+        <Text style={styles.aboutParagraph}>
+          {t('about.description')}
         </Text>
         
-        <Text style={[styles.secondaryText, localStyles.subtitle]}>Comment ça marche?</Text>
-        
-        <Text style={[styles.text, localStyles.paragraph]}>
-          1. Entrez votre balance totale disponible pour la stratégie.
-        </Text>
-        <Text style={[styles.text, localStyles.paragraph]}>
-          2. Spécifiez le prix initial et le prix final cible de l'actif.
-        </Text>
-        <Text style={[styles.text, localStyles.paragraph]}>
-          3. Définissez le pourcentage de réduction attendu à chaque itération.
-        </Text>
-        <Text style={[styles.text, localStyles.paragraph]}>
-          4. Optionnellement, définissez un target (objectif) de prix de sortie.
-        </Text>
-        <Text style={[styles.text, localStyles.paragraph]}>
-          5. Le calculateur vous indiquera combien d'itérations seront nécessaires, comment répartir votre 
-          capital, et présentera le détail de chaque itération.
+        <Text style={styles.aboutSubtitle}>
+          {t('about.howTo')}
         </Text>
         
-        <Text style={[styles.secondaryText, localStyles.subtitle]}>Formules utilisées</Text>
+        <Text style={styles.aboutParagraph}>{t('about.step1')}</Text>
+        <Text style={styles.aboutParagraph}>{t('about.step2')}</Text>
+        <Text style={styles.aboutParagraph}>{t('about.step3')}</Text>
+        <Text style={styles.aboutParagraph}>{t('about.step4')}</Text>
+        <Text style={styles.aboutParagraph}>{t('about.step5')}</Text>
         
-        <Text style={[styles.text, localStyles.paragraph]}>
-          <Text style={{fontWeight: 'bold'}}>Nombre d'itérations: </Text>
-          log(Prix final / Prix initial) / log(1 - Réduction)
+        <Text style={styles.aboutSubtitle}>{t('about.formulas')}</Text>
+        
+        <Text style={styles.aboutParagraph}>
+          <Text style={{fontWeight: 'bold'}}>{t('about.iterations')} </Text>
+          {t('about.iterations_formula')}
         </Text>
         
-        <Text style={[styles.text, localStyles.paragraph]}>
-          <Text style={{fontWeight: 'bold'}}>Prix de sortie: </Text>
-          Si Target en %, alors Prix d'entrée × (1 + Target/100)
-          {'\n'}
-          Si Target en valeur absolue, alors directement cette valeur
+        <Text style={styles.aboutParagraph}>
+          <Text style={{fontWeight: 'bold'}}>{t('about.exitPrice')} </Text>
+          {t('about.exitPrice_formula')}
         </Text>
         
-        <Text style={[styles.text, localStyles.paragraph]}>
-          <Text style={{fontWeight: 'bold'}}>Profit: </Text>
-          (Prix Sortie - Prix entrée) × (Montant Par Trade × Levier / Prix entrée)
+        <Text style={styles.aboutParagraph}>
+          <Text style={{fontWeight: 'bold'}}>{t('about.profit')} </Text>
+          {t('about.profit_formula')}
         </Text>
         
-        <Text style={[styles.secondaryText, localStyles.subtitle]}>Récupération des pertes</Text>
+        <Text style={styles.aboutSubtitle}>{t('about.lossRecovery')}</Text>
         
-        <Text style={[styles.text, localStyles.paragraph]}>
-          L'option "Récupération des pertes" permet d'ajouter au profit le montant par trade 
-          multiplié par (numéro d'itération - 1). Cette stratégie est utile pour compenser 
-          les pertes accumulées lors des itérations précédentes.
-        </Text>
+        <Text style={styles.aboutParagraph}>{t('about.lossRecovery_description')}</Text>
         
-        <Text style={[styles.text, localStyles.paragraph]}>
-          Lorsque cette option est activée et que le Target est en pourcentage, le prix de sortie 
-          est également ajusté selon la formule :
-          {'\n\n'}
-          Prix de sortie = ((Profit × Prix entrée) / (Montant par trade × Levier)) + Prix entrée
-          {'\n\n'}
-          Cela permet de calculer le prix exact nécessaire pour atteindre le profit souhaité avec 
-          la récupération des pertes.
-        </Text>
+        <Text style={styles.aboutParagraph}>{t('about.lossRecovery_formula')}</Text>
       </View>
       
-      <View style={[styles.card, localStyles.section]}>
-        <View style={localStyles.sectionHeader}>
+      <View style={[styles.card, styles.aboutSection]}>
+        <View style={styles.aboutSectionHeader}>
           <Ionicons 
             name="information-circle" 
             size={24} 
             color={theme.colors.primary} 
-            style={localStyles.sectionIcon} 
+            style={styles.aboutSectionIcon} 
           />
-          <Text style={[localStyles.sectionTitle, { color: theme.colors.text, fontSize: 18 }]}>
-            Historique des mises à jour
+          <Text style={[styles.aboutSectionTitle, { fontSize: 18 }]}>
+            {t('about.updateHistory')}
           </Text>
         </View>
         
-        <View style={localStyles.updateItem}>
-          <Text style={[styles.text, {fontWeight: 'bold'}]}>v1.0.0 - Lancement initial</Text>
-          <Text style={[styles.secondaryText, localStyles.updateDate]}>Octobre 2023</Text>
-          <Text style={styles.text}>• Calculateur d'itérations de base</Text>
-          <Text style={styles.text}>• Mode clair/sombre</Text>
-          <Text style={styles.text}>• Calcul des prix de sortie et profits</Text>
-          <Text style={styles.text}>• Option de récupération des pertes</Text>
+        <View style={styles.aboutUpdateItem}>
+          <Text style={[styles.text, {fontWeight: 'bold'}]}>{t('about.v1')}</Text>
+          <Text style={styles.aboutUpdateDate}>{t('about.v1_date')}</Text>
+          <Text style={styles.text}>{t('about.v1_feature1')}</Text>
+          <Text style={styles.text}>{t('about.v1_feature2')}</Text>
+          <Text style={styles.text}>{t('about.v1_feature3')}</Text>
+          <Text style={styles.text}>{t('about.v1_feature4')}</Text>
         </View>
-        
-        {/* Des entrées futures seront ajoutées ici */}
       </View>
     </ScrollView>
   );
-}
-
-const localStyles = StyleSheet.create({
-  contentContainer: {
-    paddingBottom: 30,
-    paddingHorizontal: 15,
-  },
-  section: {
-    marginVertical: 10,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  sectionIcon: {
-    marginRight: 10,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  subtitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 15,
-    marginBottom: 5,
-  },
-  paragraph: {
-    marginBottom: 10,
-    lineHeight: 20,
-  },
-  updateItem: {
-    marginBottom: 15,
-  },
-  updateDate: {
-    fontStyle: 'italic',
-    marginBottom: 5,
-    fontSize: 12,
-  }
-}); 
+} 

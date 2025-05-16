@@ -1,8 +1,9 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { ThemeContext } from '../../theme/ThemeContext';
+import { ThemeContext } from '../../contexts/ThemeContext';
 import { getThemedStyles } from '../../styles/styles';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   iterations: number;
@@ -19,41 +20,23 @@ const SummaryCard: React.FC<Props> = ({
 }) => {
   const { theme } = useContext(ThemeContext);
   const styles = getThemedStyles(theme);
+  const { t } = useTranslation();
   
   return (
-    <View style={[styles.card, localStyles.mainCard]}>
-      <View style={localStyles.cardHeader}>
+    <View style={[styles.card, styles.allocationCard]}>
+      <View style={styles.cardHeader}>
         <MaterialIcons name="calculate" size={24} color={theme.colors.primary} />
-        <Text style={[styles.title, localStyles.cardTitle]}>Résultat</Text>
+        <Text style={styles.cardTitle}>{t('cards.result')}</Text>
       </View>
-      <View style={[localStyles.divider, { backgroundColor: theme.colors.border }]} />
+      <View style={styles.dividerStyle} />
       <Text style={styles.text}>
-        Nombre d'itérations théorique : {iterations.toFixed(2)}
+        {t('cards.theoreticalIterations')}: {iterations.toFixed(2)}
       </Text>
       <Text style={styles.secondaryText}>
-        Il faut entre {floor} et {ceil} itérations pour atteindre ou dépasser {targetPrice.toFixed(2)} $.
+        {t('cards.iterationRange', { min: floor, max: ceil, price: targetPrice.toFixed(2) })}
       </Text>
     </View>
   );
 };
-
-const localStyles = StyleSheet.create({
-  mainCard: {
-    marginBottom: 15,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  cardTitle: {
-    marginLeft: 8,
-    fontSize: 18,
-  },
-  divider: {
-    height: 1,
-    marginVertical: 8,
-  },
-});
 
 export default SummaryCard; 

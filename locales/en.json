@@ -1,0 +1,10 @@
+"reductionRate": "Reduction Rate (%)",
+"targetPrice": "Target Price",
+"calculate": "Calculate",
+"error": {
+  "invalidInput": "Please check your inputs. All fields must be valid numbers.",
+  "mustBeNumber": "Must be a number",
+  "invalidValues": "Invalid values. Initial price must be greater than final price, and all values must be positive."
+},
+"result": {
+} 

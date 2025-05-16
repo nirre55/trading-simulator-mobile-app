@@ -1,0 +1,123 @@
+{
+  "common": {
+    "appName": "Simulateur de Trading",
+    "loading": "Chargement...",
+    "yes": "Oui",
+    "no": "Non",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "next": "Suivant",
+    "error": "Erreur"
+  },
+  "navigation": {
+    "home": "Accueil",
+    "calculator": "Calculateur",
+    "settings": "Paramètres",
+    "about": "À propos"
+  },
+  "home": {
+    "welcome": "Bienvenue sur le Simulateur de Trading",
+    "subtitle": "Commencez à trader dans un environnement sans risque",
+    "getStarted": "Commencer"
+  },
+  "calculator": {
+    "title": "Calculateur de Trading",
+    "subtitle": "Calculez le risque et les rendements potentiels",
+    "balance": "Balance ($)",
+    "initialPrice": "Prix initial ($)",
+    "finalPrice": "Prix final ($)",
+    "reductionRate": "Réduction par itération (%)",
+    "targetPrice": "Prix cible",
+    "riskAmount": "Montant du risque",
+    "potentialProfit": "Profit potentiel",
+    "riskRewardRatio": "Ratio Risque/Récompense",
+    "calculate": "Calculer",
+    "clear": "Effacer",
+    "defaultSettings": "Paramètres par défaut",
+    "error": {
+      "invalidValues": "Erreur : Les valeurs doivent être valides et le prix final doit être inférieur au prix initial.",
+      "invalidInput": "Erreur : Toutes les valeurs d'entrée doivent être des nombres valides."
+    }
+  },
+  "results": {
+    "error": "Une erreur est survenue",
+    "summary": "Résumé",
+    "iterations": "Itérations",
+    "min": "Minimum",
+    "max": "Maximum",
+    "price": "Prix",
+    "allocation": "Allocation des fonds",
+    "totalBalance": "Balance totale",
+    "tradesCount": "Nombre d'achats",
+    "amountPerTrade": "Montant par achat",
+    "leverage": "Effet de levier",
+    "iterationDetails": "Détails des itérations",
+    "iteration": "Itération",
+    "entryPrice": "Prix d'entrée",
+    "exitPrice": "Prix de sortie",
+    "profit": "Profit"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "theme": "Thème",
+    "darkMode": "Mode sombre",
+    "notifications": "Notifications",
+    "about": "À propos",
+    "version": "Version"
+  },
+  "about": {
+    "description": "Le calculateur d'itérations est un outil qui permet de planifier une stratégie d'achat progressif sur un actif dont le prix baisse régulièrement. Il calcule le nombre d'achats nécessaires pour atteindre le prix cible final.",
+    "howTo": "Comment ça marche?",
+    "step1": "1. Entrez votre balance totale disponible pour la stratégie.",
+    "step2": "2. Spécifiez le prix initial et le prix final cible de l'actif.",
+    "step3": "3. Définissez le pourcentage de réduction attendu à chaque itération.",
+    "step4": "4. Optionnellement, définissez un target (objectif) de prix de sortie.",
+    "step5": "5. Le calculateur vous indiquera combien d'itérations seront nécessaires, comment répartir votre capital, et présentera le détail de chaque itération.",
+    "formulas": "Formules utilisées",
+    "iterations": "Nombre d'itérations:",
+    "iterations_formula": "log(Prix final / Prix initial) / log(1 - Réduction)",
+    "exitPrice": "Prix de sortie:",
+    "exitPrice_formula": "Si Target en %, alors Prix d'entrée × (1 + Target/100)\nSi Target en valeur absolue, alors directement cette valeur",
+    "profit": "Profit:",
+    "profit_formula": "(Prix Sortie - Prix entrée) × (Montant Par Trade × Levier / Prix entrée)",
+    "lossRecovery": "Récupération des pertes",
+    "lossRecovery_description": "L'option \"Récupération des pertes\" permet d'ajouter au profit le montant par trade multiplié par (numéro d'itération - 1). Cette stratégie est utile pour compenser les pertes accumulées lors des itérations précédentes.",
+    "lossRecovery_formula": "Lorsque cette option est activée et que le Target est en pourcentage, le prix de sortie est également ajusté selon la formule :\n\nPrix de sortie = ((Profit × Prix entrée) / (Montant par trade × Levier)) + Prix entrée\n\nCela permet de calculer le prix exact nécessaire pour atteindre le profit souhaité avec la récupération des pertes.",
+    "updateHistory": "Historique des mises à jour",
+    "v1": "v1.0.0 - Lancement initial",
+    "v1_date": "Octobre 2023",
+    "v1_feature1": "• Calculateur d'itérations de base",
+    "v1_feature2": "• Mode clair/sombre",
+    "v1_feature3": "• Calcul des prix de sortie et profits",
+    "v1_feature4": "• Option de récupération des pertes"
+  },
+  "cards": {
+    "result": "Résultat",
+    "theoreticalIterations": "Nombre d'itérations théorique",
+    "iterationRange": "Il faut entre {min} et {max} itérations pour atteindre ou dépasser {price} $.",
+    "minResult": "Résultat min.",
+    "maxResult": "Résultat max.",
+    "iterations": "itérations",
+    "allocation": "Allocation des fonds",
+    "totalBalance": "Balance totale:",
+    "tradesCount": "Nombre de trades:",
+    "amountPerTrade": "Montant par trade:",
+    "recommendedLeverage": "Levier recommandé:",
+    "leverageInfo": "Basé sur une réduction de {reduction}% par itération",
+    "noIterationDetails": "Aucun détail d'itération disponible."
+  },
+  "tables": {
+    "iterationDetails": "Détails des Itérations",
+    "lossRecovery": "Récupération des pertes",
+    "lossRecoveryInfo": "Avec récupération des pertes, le profit inclut le montant {amount}$ multiplié par (numéro d'itération - 1). Le prix de sortie est également ajusté pour atteindre ce profit.",
+    "iteration": "Itération",
+    "entryPrice": "Prix d'entrée ($)",
+    "exitPrice": "Prix de sortie ($)",
+    "profit": "Profit ($)",
+    "liquidationPrice": "Prix de liquidation ($)"
+  }
+} 

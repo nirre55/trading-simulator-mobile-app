@@ -7,42 +7,57 @@ import AboutScreen from "../screens/AboutScreen";
 import { ThemeContext } from "../theme/ThemeContext";
 import { StyleSheet, View, ViewStyle } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from "react-i18next";
 
 const Drawer = createDrawerNavigator();
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
-const mainScreens = [
-  {
-    name: "Accueil",
-    component: HomeScreen,
-    icon: "home" as IconName
-  },
-  {
-    name: "Calculateur",
-    component: CalculatorScreen,
-    icon: "calculator" as IconName
-  },
-];
+// Utilisation d'une fonction pour définir les écrans afin d'accéder à la traduction
+const getScreens = (t: (key: string) => string) => {
+  // Écrans principaux
+  const mainScreens = [
+    {
+      name: "home",
+      label: t('navigation.home'),
+      component: HomeScreen,
+      icon: "home" as IconName
+    },
+    {
+      name: "calculator",
+      label: t('navigation.calculator'),
+      component: CalculatorScreen,
+      icon: "calculator" as IconName
+    },
+  ];
 
-const bottomScreens = [
-  {
-    name: "À propos",
-    component: AboutScreen,
-    icon: "information-circle" as IconName
-  },
-  {
-    name: "Paramètres",
-    component: SettingsScreen,
-    icon: "settings" as IconName
-  }
-];
+  // Écrans de bas de menu
+  const bottomScreens = [
+    {
+      name: "about",
+      label: t('navigation.about'),
+      component: AboutScreen,
+      icon: "information-circle" as IconName
+    },
+    {
+      name: "settings",
+      label: t('navigation.settings'),
+      component: SettingsScreen,
+      icon: "settings" as IconName
+    }
+  ];
+
+  return { mainScreens, bottomScreens };
+};
 
 // Composant personnalisé pour le contenu du Drawer
 function CustomDrawerContent(props: any) {
   const { theme } = useContext(ThemeContext);
+  const { t } = useTranslation();
   const { state, navigation } = props;
   const { routes } = state;
+  
+  const { mainScreens, bottomScreens } = getScreens(t);
   
   // Séparer les routes principales et les routes du bas
   const mainRoutes = routes.filter((route: any) => 
@@ -64,7 +79,7 @@ function CustomDrawerContent(props: any) {
             return (
               <DrawerItem
                 key={name}
-                label={name}
+                label={screen?.label || name}
                 focused={focused}
                 onPress={() => navigation.navigate(name)}
                 activeTintColor={theme.colors.primary}
@@ -94,7 +109,7 @@ function CustomDrawerContent(props: any) {
             return (
               <DrawerItem
                 key={name}
-                label={name}
+                label={screen?.label || name}
                 focused={focused}
                 onPress={() => navigation.navigate(name)}
                 activeTintColor={theme.colors.primary}
@@ -117,10 +132,12 @@ function CustomDrawerContent(props: any) {
 
 export default function DrawerNavigator() {
   const { theme } = useContext(ThemeContext);
+  const { t } = useTranslation();
+  const { mainScreens, bottomScreens } = getScreens(t);
   
   return (
     <Drawer.Navigator 
-      initialRouteName="Accueil"
+      initialRouteName="home"
       drawerContent={props => <CustomDrawerContent {...props} />}
       screenOptions={{
         headerStyle: {
@@ -142,7 +159,10 @@ export default function DrawerNavigator() {
         <Drawer.Screen 
           key={screen.name}
           name={screen.name} 
-          component={screen.component} 
+          component={screen.component}
+          options={{
+            title: screen.label
+          }}
         />
       ))}
       
@@ -151,7 +171,10 @@ export default function DrawerNavigator() {
         <Drawer.Screen 
           key={screen.name}
           name={screen.name} 
-          component={screen.component} 
+          component={screen.component}
+          options={{
+            title: screen.label
+          }}
         />
       ))}
     </Drawer.Navigator>

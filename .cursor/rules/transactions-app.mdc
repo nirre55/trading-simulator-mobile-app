@@ -1,0 +1,125 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+## 🌍 Choix de la bibliothèque d'internationalisation (i18n)
+
+Plusieurs bibliothèques sont disponibles pour gérer la traduction dans React Native. Voici les plus populaires :([Moments Log][1])
+
+1. **React-i18next** : Basée sur i18next, elle offre une intégration fluide avec React Native, supporte le chargement asynchrone des traductions, la détection automatique de la langue de l'appareil, et propose des fonctionnalités avancées comme la gestion des pluriels et l'interpolation. ([Intlayer][2])
+
+2. **Intlayer** : Une bibliothèque innovante qui permet de gérer les traductions au niveau des composants, avec un support TypeScript natif et une génération automatique des types. Elle est légère et flexible, adaptée aux environnements React Native. ([Intlayer][3])
+
+3. **LinguiJS** : Propose une approche moderne avec une extraction automatique des messages via CLI, une surcharge minimale à l'exécution, et une compatibilité TypeScript. Elle est adaptée aux projets nécessitant une gestion rigoureuse des traductions. ([Intlayer][2])
+
+---
+
+## 📁 Organisation des fichiers de traduction
+
+* **Structure des fichiers** : Créez un dossier `locales` contenant un fichier JSON par langue, par exemple :([stacklima.com][4])
+
+  ```
+  locales/
+    en.json
+    fr.json
+    es.json
+  ```
+
+* **Clés de traduction** : Utilisez des clés descriptives et hiérarchisées pour faciliter la maintenance, par exemple :
+
+  ```json
+  {
+    "home": {
+      "welcome": "Bienvenue",
+      "description": "Ceci est une application multilingue."
+    }
+  }
+  ```
+
+---
+
+## ⚙️ Configuration de la bibliothèque i18n
+
+Voici un exemple de configuration avec **React-i18next** :([Intlayer][5])
+
+```javascript
+// i18n.js
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import * as RNLocalize from 'react-native-localize';
+import en from './locales/en.json';
+import fr from './locales/fr.json';
+
+const resources = {
+  en: { translation: en },
+  fr: { translation: fr },
+};
+
+const languageDetector = {
+  type: 'languageDetector',
+  async: true,
+  detect: (callback) => {
+    const locales = RNLocalize.getLocales();
+    callback(locales[0]?.languageTag || 'en');
+  },
+  init: () => {},
+  cacheUserLanguage: () => {},
+};
+
+i18n
+  .use(languageDetector)
+  .use(initReactI18next)
+  .init({
+    resources,
+    fallbackLng: 'en',
+    interpolation: {
+      escapeValue: false,
+    },
+  });
+
+export default i18n;
+```
+
+Dans votre composant principal (par exemple, `App.js`), importez simplement `i18n` pour initialiser la configuration.
+
+---
+
+## 🛠️ Meilleures pratiques
+
+* **Utilisation de hooks** : Utilisez le hook `useTranslation` pour accéder aux fonctions de traduction dans vos composants.
+
+  ```javascript
+  import { useTranslation } from 'react-i18next';
+
+  const MyComponent = () => {
+    const { t } = useTranslation();
+    return <Text>{t('home.welcome')}</Text>;
+  };
+  ```
+
+* **Gestion des pluriels et de l'interpolation** : Profitez des fonctionnalités avancées pour gérer les pluriels et insérer dynamiquement des variables dans vos traductions.
+
+  ```json
+  {
+    "messages": "Vous avez {{count}} message",
+    "messages_plural": "Vous avez {{count}} messages"
+  }
+  ```
+
+* **Chargement asynchrone des traductions** : Pour les grandes applications, envisagez de charger les fichiers de traduction à la demande pour réduire la taille initiale de l'application.([Intlayer][2])
+
+* **Tests réguliers** : Testez votre application dans toutes les langues prises en charge pour vous assurer de la qualité des traductions et de l'adaptation de l'interface.
+
+---
+
+## 🚫 Éléments à éviter
+
+* **Concaténation de chaînes traduites** : Évitez de construire des phrases en concaténant plusieurs traductions, car cela peut entraîner des incohérences grammaticales dans certaines langues.
+
+* **Hardcoding des textes** : Ne placez pas de textes directement dans vos composants. Utilisez toujours les fonctions de traduction pour garantir la cohérence et faciliter la maintenance.
+
+* **Ignorer les spécificités culturelles** : Tenez compte des différences culturelles, notamment dans le formatage des dates, des nombres et des devises.([Intlayer][2])
+
+
+

@@ -1,0 +1,123 @@
+{
+  "common": {
+    "appName": "Trading Simulator",
+    "loading": "Loading...",
+    "yes": "Yes",
+    "no": "No",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "error": "Error"
+  },
+  "navigation": {
+    "home": "Home",
+    "calculator": "Calculator",
+    "settings": "Settings",
+    "about": "About"
+  },
+  "home": {
+    "welcome": "Welcome to Trading Simulator",
+    "subtitle": "Start trading in a risk-free environment",
+    "getStarted": "Get Started"
+  },
+  "calculator": {
+    "title": "Trading Calculator",
+    "subtitle": "Calculate risk and potential returns",
+    "balance": "Balance ($)",
+    "initialPrice": "Initial Price ($)",
+    "finalPrice": "Final Price ($)",
+    "reductionRate": "Reduction per iteration (%)",
+    "targetPrice": "Target Price",
+    "riskAmount": "Risk Amount",
+    "potentialProfit": "Potential Profit",
+    "riskRewardRatio": "Risk/Reward Ratio",
+    "calculate": "Calculate",
+    "clear": "Clear",
+    "defaultSettings": "Default Settings",
+    "error": {
+      "invalidValues": "Error: Values must be valid and the final price must be lower than the initial price.",
+      "invalidInput": "Error: All input values must be valid numbers."
+    }
+  },
+  "results": {
+    "error": "An error occurred",
+    "summary": "Summary",
+    "iterations": "Iterations",
+    "min": "Minimum",
+    "max": "Maximum",
+    "price": "Price",
+    "allocation": "Fund Allocation",
+    "totalBalance": "Total Balance",
+    "tradesCount": "Number of Trades",
+    "amountPerTrade": "Amount per Trade",
+    "leverage": "Leverage",
+    "iterationDetails": "Iteration Details",
+    "iteration": "Iteration",
+    "entryPrice": "Entry Price",
+    "exitPrice": "Exit Price",
+    "profit": "Profit"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "darkMode": "Dark Mode",
+    "notifications": "Notifications",
+    "about": "About",
+    "version": "Version"
+  },
+  "about": {
+    "description": "The iteration calculator is a tool that allows you to plan a progressive buying strategy on an asset whose price regularly decreases. It calculates the number of purchases needed to reach the final target price.",
+    "howTo": "How does it work?",
+    "step1": "1. Enter your total balance available for the strategy.",
+    "step2": "2. Specify the initial price and target final price of the asset.",
+    "step3": "3. Define the percentage reduction expected at each iteration.",
+    "step4": "4. Optionally, define a target exit price.",
+    "step5": "5. The calculator will show you how many iterations will be needed, how to distribute your capital, and present the details of each iteration.",
+    "formulas": "Formulas used",
+    "iterations": "Number of iterations:",
+    "iterations_formula": "log(Final price / Initial price) / log(1 - Reduction)",
+    "exitPrice": "Exit price:",
+    "exitPrice_formula": "If Target in %, then Entry price × (1 + Target/100)\nIf Target is absolute value, then directly that value",
+    "profit": "Profit:",
+    "profit_formula": "(Exit price - Entry price) × (Amount per trade × Leverage / Entry price)",
+    "lossRecovery": "Loss Recovery",
+    "lossRecovery_description": "The \"Loss Recovery\" option allows you to add to the profit the amount per trade multiplied by (iteration number - 1). This strategy is useful to compensate for losses accumulated during previous iterations.",
+    "lossRecovery_formula": "When this option is enabled and the Target is in percentage, the exit price is also adjusted according to the formula:\n\nExit price = ((Profit × Entry price) / (Amount per trade × Leverage)) + Entry price\n\nThis allows calculating the exact price needed to reach the desired profit with loss recovery.",
+    "updateHistory": "Update History",
+    "v1": "v1.0.0 - Initial Release",
+    "v1_date": "October 2023",
+    "v1_feature1": "• Basic iteration calculator",
+    "v1_feature2": "• Light/dark mode",
+    "v1_feature3": "• Exit price and profit calculation",
+    "v1_feature4": "• Loss recovery option"
+  },
+  "cards": {
+    "result": "Result",
+    "theoreticalIterations": "Theoretical iterations count",
+    "iterationRange": "It takes between {min} and {max} iterations to reach or exceed {price} $.",
+    "minResult": "Min. Result",
+    "maxResult": "Max. Result",
+    "iterations": "iterations",
+    "allocation": "Fund Allocation",
+    "totalBalance": "Total balance:",
+    "tradesCount": "Number of trades:",
+    "amountPerTrade": "Amount per trade:",
+    "recommendedLeverage": "Recommended leverage:",
+    "leverageInfo": "Based on a reduction of {reduction}% per iteration",
+    "noIterationDetails": "No iteration details available."
+  },
+  "tables": {
+    "iterationDetails": "Iteration Details",
+    "lossRecovery": "Loss Recovery",
+    "lossRecoveryInfo": "With loss recovery, the profit includes the amount {amount}$ multiplied by (iteration number - 1). The exit price is also adjusted to reach this profit.",
+    "iteration": "Iteration",
+    "entryPrice": "Entry Price ($)",
+    "exitPrice": "Exit Price ($)",
+    "profit": "Profit ($)",
+    "liquidationPrice": "Liquidation Price ($)"
+  }
+} 

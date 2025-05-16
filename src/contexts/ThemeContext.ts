@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { ThemeType, LightTheme } from "./theme";
+import { ThemeType, LightTheme } from "../theme/theme"; // Modifié le chemin d'importation
 
 type ThemeContextType = {
   theme: ThemeType;
@@ -11,4 +11,4 @@ export const ThemeContext = createContext<ThemeContextType>({
   theme: LightTheme,
   isDark: false,
   toggleTheme: () => {},
-});
+}); 

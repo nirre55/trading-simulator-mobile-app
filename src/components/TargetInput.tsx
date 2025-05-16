@@ -1,13 +1,16 @@
-import React from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import { ThemeType } from "../theme/theme";
+import React, { useContext } from "react";
+import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { ThemeContext } from "../contexts/ThemeContext";
+import { getThemedStyles } from "../styles/styles";
+import { useTranslation } from "react-i18next";
 
 type TargetInputProps = {
   value: string;
   onChangeText: (text: string) => void;
   isPercentage: boolean;
   onToggle: () => void;
-  theme: ThemeType;
+  isError?: boolean;
+  errorMessage?: string;
 };
 
 const TargetInput: React.FC<TargetInputProps> = ({
@@ -15,73 +18,40 @@ const TargetInput: React.FC<TargetInputProps> = ({
   onChangeText,
   isPercentage,
   onToggle,
-  theme
+  isError,
+  errorMessage,
 }) => {
+  const { t } = useTranslation();
+  const { theme } = useContext(ThemeContext);
+  const styles = getThemedStyles(theme);
+  
   return (
-    <View style={styles.container}>
-      <View style={styles.inputWrapper}>
-        <Text style={[styles.label, { color: theme.colors.text }]}>
-          Target ({isPercentage ? '%' : '$'})
+    <View style={styles.targetInputContainer}>
+      <View style={styles.targetInputWrapper}>
+        <Text style={styles.label}>
+          {t('calculator.targetPrice')} ({isPercentage ? '%' : '$'})
         </Text>
         <TextInput
-          style={[styles.input, { 
-            backgroundColor: theme.colors.inputBackground,
-            borderColor: theme.colors.inputBorder,
-            color: theme.colors.text 
-          }]}
+          style={[isError ? styles.inputError : styles.input, { height: 40 }]}
           value={value}
           onChangeText={onChangeText}
           keyboardType="numeric"
+          placeholderTextColor={theme.colors.secondaryText}
         />
+        {isError && errorMessage && (
+          <Text style={{ color: theme.colors.errorText, marginTop: 4, marginLeft: 8 }}>{errorMessage}</Text>
+        )}
       </View>
       <TouchableOpacity 
-        style={[styles.button, { backgroundColor: theme.colors.primary }]} 
+        style={styles.targetInputToggleButton} 
         onPress={onToggle}
       >
-        <Text style={[styles.buttonText, { color: theme.colors.buttonText }]}>
+        <Text style={styles.targetInputToggleButtonText}>
           {isPercentage ? '$' : '%'}
         </Text>
       </TouchableOpacity>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 10,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-  },
-  inputWrapper: {
-    flex: 1,
-    marginRight: 10,
-  },
-  label: {
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-    height: 40,
-  },
-  button: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-  },
-  buttonText: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-});
 
 export default TargetInput; 
