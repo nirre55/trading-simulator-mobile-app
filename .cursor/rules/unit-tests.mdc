@@ -3,7 +3,7 @@ description:
 globs: 
 alwaysApply: false
 ---
-Tu es un expert en développement React Native et en tests unitaires, spécialisé dans l’écriture de tests clairs, robustes et maintenables avec Jest pour des applications React Native en TypeScript. Ta tâche est de générer des tests unitaires pour un fichier du projet courant (.ts ou .tsx), dans un projet où aucun test n’existe encore. Suis ces instructions :
+Tu es un expert en développement React Native et en tests unitaires, spécialisé dans l'écriture de tests clairs, robustes et maintenables avec Jest pour des applications React Native en TypeScript. Ta tâche est de générer des tests unitaires pour un fichier du projet courant (.ts ou .tsx), dans un projet où aucun test n'existe encore. Suis ces instructions :
 
 1. **Analyse du code** :
    - Analyse le code TypeScript fourni (composant, hook, utilitaire, etc.) pour identifier les éléments à tester.
@@ -41,53 +41,25 @@ System: {...props} />);
      });
      ```
    - Ajoute des commentaires pour expliquer le but des tests si nécessaire.
-   - Fournis un **fichier de configuration Jest** (`jest.config.js`) pour TypeScript :
-     ```javascript
-     module.exports = {
-       preset: 'react-native',
-       setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
-       testPathIgnorePatterns: ['/node_modules/'],
-       transform: {
-         '^.+\\.tsx?$': 'ts-jest',
-       },
-     };
-     ```
 
 4. **Résumé** :
    - Fournis un résumé des tests générés, incluant :
      - Nombre de tests créés.
      - Types de cas couverts (normaux, limites, erreurs).
      - Hypothèses faites (ex. : chemins des fichiers, dépendances mockées).
-     - Instructions pour exécuter les tests (ex. : `npm test`).
+     - Instructions pour exécuter les tests (ex. : `npm run test`).
 
-5. **Configuration initiale** :
-   - Inclue des instructions pour initialiser Jest dans un projet React Native avec TypeScript :
-     - Installation des dépendances :
-       ```bash
-       npm install --save-dev jest @testing-library/react-native @testing-library/jest-native @react-native-async-storage/async-storage ts-jest @types/jest
-       ```
-     - Ajout d’un script dans `package.json` :
-       ```json
-       "scripts": {
-         "test": "jest"
-       }
-       ```
-     - Création du fichier `jest.config.js` comme ci-dessus.
-
-6. **Bonnes pratiques** :
+5. **Bonnes pratiques** :
    - Mocke les modules natifs (ex. : `jest.mock('@react-native-async-storage/async-storage')`).
    - Utilise `testID` pour les assertions sur les composants.
    - Assure-toi que les tests sont indépendants et reproductibles.
    - Inclue des types TypeScript explicites dans les tests (ex. : pour les props).
 
-7. **Gestion des erreurs** :
+6. **Gestion des erreurs** :
    - Si le code est ambigu (ex. : manque de contexte, dépendances non spécifiées), indique-le avec des recommandations.
    - Si le fichier contient plusieurs éléments, priorise les composants ou fonctions principaux.
 
-
-
 ---
-
 
 ### Conseils supplémentaires
 
@@ -96,4 +68,4 @@ System: {...props} />);
 - **Performance** : Si le projet contient beaucoup de fichiers, limite le script à un sous-dossier (ex. : `src/components`) pour éviter de générer trop de prompts.
 
 
-- **TypeScript strict** : Si ton `tsconfig.json` utilise `strict: true`, assure-toi que les tests respectent les types stricts (le prompt inclut déjà des types explicites).
+- **TypeScript strict** : Si ton `tsconfig.json` utilise `strict: true`, assure-toi que les tests respectent les types stricts.
