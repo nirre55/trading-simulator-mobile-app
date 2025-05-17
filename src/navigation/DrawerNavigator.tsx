@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from "@react-navigation/drawer";
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem, DrawerContentComponentProps } from "@react-navigation/drawer";
 import HomeScreen from "../screens/HomeScreen";
 import CalculatorScreen from "../screens/CalculatorScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import AboutScreen from "../screens/AboutScreen";
-import { ThemeContext } from "../theme/ThemeContext";
+import { ThemeContext } from "../contexts/ThemeContext";
 import { StyleSheet, View, ViewStyle } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from "react-i18next";
@@ -13,37 +13,45 @@ const Drawer = createDrawerNavigator();
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
+// Type pour un écran dans notre navigateur
+type ScreenConfig = {
+  name: string;
+  label: string;
+  component: React.ComponentType<any>;
+  icon: IconName;
+};
+
 // Utilisation d'une fonction pour définir les écrans afin d'accéder à la traduction
 const getScreens = (t: (key: string) => string) => {
   // Écrans principaux
-  const mainScreens = [
+  const mainScreens: ScreenConfig[] = [
     {
       name: "home",
       label: t('navigation.home'),
       component: HomeScreen,
-      icon: "home" as IconName
+      icon: "home"
     },
     {
       name: "calculator",
       label: t('navigation.calculator'),
       component: CalculatorScreen,
-      icon: "calculator" as IconName
+      icon: "calculator"
     },
   ];
 
   // Écrans de bas de menu
-  const bottomScreens = [
+  const bottomScreens: ScreenConfig[] = [
     {
       name: "about",
       label: t('navigation.about'),
       component: AboutScreen,
-      icon: "information-circle" as IconName
+      icon: "information-circle"
     },
     {
       name: "settings",
       label: t('navigation.settings'),
       component: SettingsScreen,
-      icon: "settings" as IconName
+      icon: "settings"
     }
   ];
 
@@ -51,19 +59,20 @@ const getScreens = (t: (key: string) => string) => {
 };
 
 // Composant personnalisé pour le contenu du Drawer
-function CustomDrawerContent(props: any) {
+function CustomDrawerContent(props: DrawerContentComponentProps) {
   const { theme } = useContext(ThemeContext);
   const { t } = useTranslation();
   const { state, navigation } = props;
   const { routes } = state;
+  const currentRouteName = routes[state.index].name;
   
   const { mainScreens, bottomScreens } = getScreens(t);
   
   // Séparer les routes principales et les routes du bas
-  const mainRoutes = routes.filter((route: any) => 
+  const mainRoutes = routes.filter((route) => 
     mainScreens.some(screen => screen.name === route.name));
   
-  const bottomRoutes = routes.filter((route: any) => 
+  const bottomRoutes = routes.filter((route) => 
     bottomScreens.some(screen => screen.name === route.name));
 
   return (
@@ -71,9 +80,9 @@ function CustomDrawerContent(props: any) {
       <View style={{ flex: 1 }}>
         {/* Liste des écrans principaux */}
         <View>
-          {mainRoutes.map((route: any, index: number) => {
+          {mainRoutes.map((route) => {
             const { name } = route;
-            const focused = index === state.index;
+            const focused = name === currentRouteName;
             const screen = mainScreens.find(s => s.name === name);
             
             return (
@@ -101,9 +110,9 @@ function CustomDrawerContent(props: any) {
           styles.bottomSection, 
           { borderTopColor: theme.colors.border }
         ]}>
-          {bottomRoutes.map((route: any) => {
+          {bottomRoutes.map((route) => {
             const { name } = route;
-            const focused = bottomRoutes.indexOf(route) + mainRoutes.length === state.index;
+            const focused = name === currentRouteName;
             const screen = bottomScreens.find(s => s.name === name);
             
             return (
@@ -138,7 +147,7 @@ export default function DrawerNavigator() {
   return (
     <Drawer.Navigator 
       initialRouteName="home"
-      drawerContent={props => <CustomDrawerContent {...props} />}
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         headerStyle: {
           backgroundColor: theme.colors.card,
