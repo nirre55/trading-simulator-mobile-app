@@ -22,7 +22,7 @@ Tu es un expert en développement React Native et en tests unitaires, spécialis
    - Respecte la syntaxe TypeScript (types explicites, interfaces, etc.).
 
 3. **Sortie** :
-   - Produis un fichier de test nommé `__tests__/test_[nom_du_fichier].test.tsx` avec une structure claire :
+   - Produis un fichier de test nommé `src/__tests__/test_[nom_du_fichier].test.tsx` avec une structure claire :
      ```typescript
      import { render, screen } from '@testing-library/react-native';
      import Component from '../src/components/Component';
