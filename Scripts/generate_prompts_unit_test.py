@@ -39,7 +39,7 @@ def generate_prompts(directory):
         prompt_file = os.path.join(test_dir, f"prompt_{file_name}.txt")
 
         # Générer le prompt
-        prompt_content = f"""Génère des tests unitaires pour le code du projet courant dans une application React Native, en utilisant Jest et @testing-library/react-native. Produis un fichier src/__tests__/test_{file_name}.test.tsx, un résumé des tests, et des instructions pour configurer Jest. Le projet n’a pas encore de tests et utilise TypeScript.
+        prompt_content = f"""Génère des tests unitaires pour le code du projet courant dans une application React Native, en utilisant Jest et @testing-library/react-native. Produis un fichier src/__tests__/test_{file_name}.test.tsx, un résumé des tests. Utilise TypeScript.
 
 Code à tester :
 ```typescript

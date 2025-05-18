@@ -23,6 +23,7 @@ export default function Input({ label, value, onChangeText, isError, errorMessag
         value={value}
         onChangeText={onChangeText}
         placeholderTextColor={theme.colors.secondaryText}
+        testID="input"
         {...props}
       />
       {isError && errorMessage && (

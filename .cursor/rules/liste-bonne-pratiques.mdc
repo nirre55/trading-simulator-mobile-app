@@ -3,121 +3,180 @@ description:
 globs: 
 alwaysApply: false
 ---
-Voici une **liste des meilleures pratiques** pour structurer un projet **React Native** de manière propre, évolutive et maintenable :
+## 🛠️ **1. Structure du Projet**
 
----
+### ✅ À faire
 
-## 🗂️ 1. **Architecture de dossiers claire**
+* Utiliser une architecture modulaire claire :
 
-Utilise une structure modulaire basée sur les fonctionnalités (feature-based) :
-
-```
-/src
-  /assets          // images, fonts, icons, etc.
-  /components      // composants réutilisables (Button, Modal, etc.)
-  /features        // chaque fonctionnalité isolée
-    /auth
-      AuthScreen.tsx
-      authSlice.ts
-      authService.ts
-    /profile
-      ProfileScreen.tsx
-  /navigation      // stack/tab navigators
-  /services        // API, Firebase, etc.
-  /store           // Redux/Zustand/MobX store
-  /utils           // fonctions utilitaires, helpers
-  /hooks           // custom hooks
-  /constants       // couleurs, tailles, textes fixes
-  /theme           // theming centralisé
-App.tsx
-```
-
----
-
-## 🧱 2. **Découpage logique par fonctionnalités**
-
-Évite un dossier "screens" géant. Regroupe les fichiers liés à une même fonctionnalité dans un dossier (composants, logique, styles, etc.).
-
----
-
-## 🧑‍🎨 3. **Design System & Thème global**
-
-* Centralise les couleurs, polices, tailles, etc. dans `/theme`.
-* Utilise un `ThemeProvider` (comme `styled-components` ou `NativeWind` / `TailwindCSS` via `tailwind-rn`).
-
----
-
-## 🧰 4. **Utilisation de TypeScript**
-
-* Typage strict des props, hooks, services.
-* Crée des types globaux partagés dans `/types`.
-
----
-
-## 🧭 5. **Navigation bien organisée**
-
-* Regroupe tous les navigators dans `/navigation`.
-* Utilise `react-navigation` avec des types (`createStackNavigator<ParamList>()`).
-
----
-
-## 🔁 6. **Gestion d’état bien pensée**
-
-Choisis une solution en fonction de la taille de ton app :
-
-* Simple : `useState`, `useContext`
-* Moyen : `Zustand`, `Jotai`
-* Grand : `Redux Toolkit`, `MobX`
-
-Structure dans `/store` ou `/features/xxx/xxxSlice.ts`.
-
----
-
-## 🔌 7. **Appels API organisés**
-
-* Regroupe les appels dans `/services` ou `/features/xxx/xxxService.ts`.
-* Utilise `axios` ou `fetch` avec des interceptors pour l’auth, erreurs, etc.
-
----
-
-## 🧪 8. **Tests**
-
-* Utilise `jest` + `@testing-library/react-native`.
-* Place les tests à côté des composants : `MyComponent.test.tsx`.
-
----
-
-## 🛠️ 9. **Scripts et configuration**
-
-* Gère les environnements avec `react-native-config`.
-* Crée des scripts utiles (lint, format, build) dans `package.json`.
-
----
-
-## 📦 10. **Dépendances et bonnes pratiques**
-
-* Suis les versions recommandées de React Native.
-* N’utilise que des librairies bien maintenues.
-* Centralise les versions des dépendances dans `package.json`.
-
----
-
-## ✅ 11. **Linting & Formatage**
-
-* ESLint + Prettier + Husky pour le code propre.
-* Exemple de config :
-
-  ```bash
-  npx eslint . --fix
-  npx prettier --write .
   ```
+  /src
+    /components
+    /screens
+    /navigation
+    /hooks
+    /services
+    /store
+    /utils
+    /types
+  ```
+* Regrouper les fichiers par fonctionnalité (feature-based folders).
+* Placer les fichiers de types (`*.d.ts`, `types.ts`) dans `/types`.
+
+### ❌ À éviter
+
+* Mettre tous les fichiers dans un seul dossier `/src`.
+* Nommer des composants ou fichiers avec des abréviations non explicites.
 
 ---
 
-## 🔐 12. **Sécurité & Sensible**
+## 📦 **2. Utilisation de TypeScript**
 
-* Stocke les clés API avec `react-native-dotenv` ou `react-native-config`.
-* Ne commit jamais `.env`.
+### ✅ À faire
 
+* Toujours typer les props des composants :
 
+  ```ts
+  interface Props {
+    title: string;
+    onPress: () => void;
+  }
+  ```
+* Activer les options strictes dans `tsconfig.json` :
+
+  ```json
+  {
+    "compilerOptions": {
+      "strict": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true
+    }
+  }
+  ```
+* Utiliser les types `React.FC<Props>` uniquement si vous utilisez `children`.
+
+### ❌ À éviter
+
+* Utiliser `any` ou `@ts-ignore`, sauf en dernier recours documenté.
+* Utiliser des types primitifs dans des contextes complexes au lieu de types personnalisés.
+
+---
+
+## 🧱 **3. Composants**
+
+### ✅ À faire
+
+* Utiliser des composants fonctionnels avec hooks (`useState`, `useEffect`, etc.).
+* Extraire les composants réutilisables dans `/components`.
+* Favoriser des composants présentatifs (UI) découplés de la logique métier.
+
+### ❌ À éviter
+
+* Mettre de la logique métier dans les composants UI.
+* Avoir des composants de plus de 200 lignes sans les découper.
+
+---
+
+## 🧭 **4. Navigation (React Navigation)**
+
+### ✅ À faire
+
+* Typage fort des paramètres de navigation :
+
+  ```ts
+  type RootStackParamList = {
+    Home: undefined;
+    Details: { id: string };
+  };
+  ```
+* Centraliser la configuration de la navigation dans `/navigation`.
+
+### ❌ À éviter
+
+* Passer des paramètres non typés aux écrans.
+* Dupliquer les configurations de navigation.
+
+---
+
+## 🪝 **5. Hooks**
+
+### ✅ À faire
+
+* Créer des hooks personnalisés pour encapsuler la logique métier :
+
+  ```ts
+  const useAuth = () => { ... };
+  ```
+* Préfixer les hooks par `use` et les placer dans `/hooks`.
+
+### ❌ À éviter
+
+* Appeler des hooks dans des conditions ou des boucles.
+* Mettre trop de logique dans un seul hook personnalisé.
+
+---
+
+## 🧪 **6. Tests avec Jest**
+
+### ✅ À faire
+
+* Utiliser `@testing-library/react-native` pour tester les composants.
+* Créer un dossier `__tests__` ou un fichier `MonComposant.test.tsx` à côté du composant.
+* Tester les cas suivants :
+
+  * Rendu visuel
+  * Interaction utilisateur
+  * Comportement conditionnel
+* Mock les appels réseau ou les modules Expo via `jest.mock`.
+
+### ❌ À éviter
+
+* Tester l'implémentation au lieu du comportement (focus sur le "quoi" pas le "comment").
+* Ne pas écrire de tests pour les composants critiques (auth, navigation, etc).
+
+---
+
+## ⚙️ **7. Expo & Native Modules**
+
+### ✅ À faire
+
+* Utiliser les APIs d'Expo avant de recourir à des modules natifs non managés.
+* Utiliser `expo install` pour garantir les versions compatibles.
+
+### ❌ À éviter
+
+* Ajouter des packages natifs incompatibles avec Expo Managed Workflow sans eject.
+* Modifier directement les fichiers Android/iOS en mode géré.
+
+---
+
+## 🎨 **8. Style et UI**
+
+### ✅ À faire
+
+* Utiliser `StyleSheet.create` ou `TailwindCSS` (ex: `nativewind`) pour un style clair et modulaire.
+* Favoriser un design responsive avec `Dimensions`, `useWindowDimensions`, ou `react-native-responsive-screen`.
+
+### ❌ À éviter
+
+* Hardcoder les tailles (utiliser `%`, `vh`, etc.).
+* Mettre le style inline de façon excessive.
+
+---
+
+## 📄 **9. Documentation et Conventions**
+
+### ✅ À faire
+
+* Ajouter un README complet avec :
+
+  * Configuration
+  * Démarrage
+  * Structure du projet
+  * Scripts utiles
+* Suivre une convention de nommage :
+
+  * Composants : `PascalCase`
+  * Fichiers utilitaires : `camelCase`
+  * Constantes : `SCREAMING_SNAKE_CASE`
 
