@@ -1,159 +1,181 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react-native';
+import { render, screen, fireEvent, act, within } from '@testing-library/react-native';
 import LanguageSelector from '../components/LanguageSelector';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LightTheme, DarkTheme } from '../theme/theme';
-import * as i18nModule from '../translations/i18n';
+// Gardez une référence au module réel si nécessaire, mais nous allons le mocker entièrement.
+// import * as i18nModule from '../translations/i18n';
+import { Text } from 'react-native'; // Pour le mock d'Ionicons
 
-// Mock pour i18n et la fonction changeLanguage
-jest.mock('../translations/i18n', () => {
+// Mock Ionicons pour éviter les problèmes de rendu asynchrone des polices dans les tests
+jest.mock('@expo/vector-icons', () => {
+  const RN = jest.requireActual('react-native');
   return {
-    changeLanguage: jest.fn(),
+    Ionicons: (props: any) => <RN.Text>Icon:{props.name || 'icon'}</RN.Text>,
   };
 });
 
-// Mock pour useTranslation
-const mockT = jest.fn((key) => key);
-const mockI18n = {
-  language: 'fr',
-  changeLanguage: jest.fn(),
-};
+// Variable globale pour contrôler la langue mockée dans les tests
+let currentMockLanguage = 'fr';
 
-jest.mock('react-i18next', () => ({
-  useTranslation: () => {
-    return {
-      t: mockT,
-      i18n: mockI18n,
-    };
+// Mock pour la fonction changeLanguage appelée par le composant
+const mockSystemChangeLanguage = jest.fn();
+
+jest.mock('../translations/i18n', () => ({
+  changeLanguage: (lng: string) => {
+    mockSystemChangeLanguage(lng);
+    currentMockLanguage = lng;
   },
 }));
 
-// Tests pour le composant LanguageSelector
+// Mock pour useTranslation
+const mockT = jest.fn((key) => key); 
+
+const mockI18nInstance = {
+  get language() { 
+    return currentMockLanguage;
+  },
+  changeLanguage: jest.fn((lng: string) => {
+    currentMockLanguage = lng;
+  }),
+};
+
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: mockT,
+    i18n: mockI18nInstance,
+  }),
+}));
+
+// Helper pour rendre avec le contexte de thème
+const renderWithProviders = (ui: React.ReactElement, isDarkTheme = false) => {
+  const themeToUse = isDarkTheme ? DarkTheme : LightTheme;
+  return render(
+    <ThemeContext.Provider
+      value={{
+        theme: themeToUse,
+        isDark: isDarkTheme,
+        toggleTheme: jest.fn(),
+      }}
+    >
+      {ui}
+    </ThemeContext.Provider>
+  );
+};
+
 describe('LanguageSelector', () => {
-  // Réinitialiser les mocks avant chaque test
   beforeEach(() => {
     jest.clearAllMocks();
-    mockI18n.language = 'fr';
+    currentMockLanguage = 'fr'; 
   });
 
-  // Test de base pour vérifier que le composant se rend correctement
-  test('rend correctement les deux options de langue', () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <ThemeContext.Provider
-        value={{
-          theme: LightTheme,
-          isDark: false,
-          toggleTheme: jest.fn()
-        }}
-      >
-        {children}
-      </ThemeContext.Provider>
-    );
+  test("affiche la langue actuelle et permet d'ouvrir le modal avec les options", async () => {
+    renderWithProviders(<LanguageSelector />);
 
-    render(<LanguageSelector />, { wrapper });
+    const button = screen.getByTestId('language-selector-button');
+    expect(within(button).getByText('Français')).toBeTruthy();
     
-    // Vérifier que les deux langues sont affichées
-    expect(screen.getByText('English')).toBeTruthy();
-    expect(screen.getByText('Français')).toBeTruthy();
+    expect(screen.queryByTestId('language-option-en')).toBeNull();
+    expect(screen.queryByTestId('language-option-fr')).toBeNull();
+
+    await act(async () => {
+      fireEvent.press(button);
+    });
+
+    const optionEn = await screen.findByTestId('language-option-en');
+    const optionFr = await screen.findByTestId('language-option-fr');
+    expect(optionEn).toBeTruthy();
+    expect(optionFr).toBeTruthy();
+    expect(within(optionEn).getByText('English')).toBeTruthy();
+    expect(within(optionFr).getByText('Français')).toBeTruthy();
   });
 
-  // Test pour vérifier que le style actif est appliqué à la langue courante (français)
-  test('applique le style actif à la langue courante (français)', () => {
-    mockI18n.language = 'fr';
+  test('change la langue en cliquant sur une option dans le modal et ferme le modal', async () => {
+    renderWithProviders(<LanguageSelector />);    
     
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <ThemeContext.Provider
-        value={{
-          theme: LightTheme,
-          isDark: false,
-          toggleTheme: jest.fn()
-        }}
-      >
-        {children}
-      </ThemeContext.Provider>
-    );
+    const initialButton = screen.getByTestId('language-selector-button');
+    await act(async () => {
+      fireEvent.press(initialButton); 
+    });
 
-    const { getByText } = render(<LanguageSelector />, { wrapper });
+    const englishOptionInModal = await screen.findByTestId('language-option-en');
     
-    // Récupérer les éléments de langue
-    const frElement = getByText('Français');
-    const enElement = getByText('English');
-    
-    // Vérifier les styles (ici on ne peut pas vérifier directement les styles,
-    // mais on peut vérifier que les éléments ont été rendus)
-    expect(frElement).toBeTruthy();
-    expect(enElement).toBeTruthy();
+    await act(async () => {
+      fireEvent.press(englishOptionInModal);
+    });
+
+    expect(mockSystemChangeLanguage).toHaveBeenCalledWith('en');
+            
+    const updatedButton = await screen.findByTestId('language-selector-button');
+    expect(within(updatedButton).getByText('English')).toBeTruthy();
+        
+    expect(screen.queryByTestId('language-option-en')).toBeNull();
+    expect(screen.queryByTestId('language-option-fr')).toBeNull();
   });
 
-  // Test pour vérifier que le style actif est appliqué à la langue courante (anglais)
-  test('applique le style actif à la langue courante (anglais)', () => {
-    mockI18n.language = 'en';
-    
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <ThemeContext.Provider
-        value={{
-          theme: LightTheme,
-          isDark: false,
-          toggleTheme: jest.fn()
-        }}
-      >
-        {children}
-      </ThemeContext.Provider>
-    );
+  test('applique le style actif à la langue sélectionnée dans le modal', async () => {
+    renderWithProviders(<LanguageSelector />); 
+            
+    const buttonToOpenModal = screen.getByTestId('language-selector-button');
+    await act(async () => {
+      fireEvent.press(buttonToOpenModal); 
+    });
 
-    const { getByText } = render(<LanguageSelector />, { wrapper });
+    const frenchOptionInModal = await screen.findByTestId('language-option-fr');
+    expect(frenchOptionInModal.props.children[0].props.style).toEqual(expect.arrayContaining([
+      expect.objectContaining({ fontWeight: 'bold', color: LightTheme.colors.primary })
+    ]));
     
-    // Récupérer les éléments de langue
-    const frElement = getByText('Français');
-    const enElement = getByText('English');
-    
-    // Vérifier les styles (ici on ne peut pas vérifier directement les styles,
-    // mais on peut vérifier que les éléments ont été rendus)
-    expect(frElement).toBeTruthy();
-    expect(enElement).toBeTruthy();
+    const englishOptionInModal = await screen.findByTestId('language-option-en');
+    const englishStyle = englishOptionInModal.props.children[0].props.style.find((s: any) => s && s.fontWeight === 'bold');
+    expect(englishStyle).toBeUndefined();
+
+    await act(async () => {
+      fireEvent.press(englishOptionInModal); 
+    });
+        
+    const buttonToReopenModal = await screen.findByTestId('language-selector-button');
+    await act(async () => {
+      fireEvent.press(buttonToReopenModal); 
+    });
+
+    const activeEnglishOption = await screen.findByTestId('language-option-en');
+    expect(activeEnglishOption.props.children[0].props.style).toEqual(expect.arrayContaining([
+      expect.objectContaining({ fontWeight: 'bold', color: LightTheme.colors.primary })
+    ]));
+
+    const inactiveFrenchOption = await screen.findByTestId('language-option-fr');
+    const frenchStyle = inactiveFrenchOption.props.children[0].props.style.find((s: any) => s && s.fontWeight === 'bold');
+    expect(frenchStyle).toBeUndefined();
   });
 
-  // Test pour vérifier que la fonction changeLanguage est appelée quand on clique sur un bouton
-  test('appelle changeLanguage quand on clique sur une langue', () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <ThemeContext.Provider
-        value={{
-          theme: LightTheme,
-          isDark: false,
-          toggleTheme: jest.fn()
-        }}
-      >
-        {children}
-      </ThemeContext.Provider>
-    );
+  test('rend correctement avec le thème sombre et le modal fonctionne', async () => {
+    currentMockLanguage = 'en';
+    renderWithProviders(<LanguageSelector />, true); 
 
-    render(<LanguageSelector />, { wrapper });
-    
-    // Simuler un clic sur le bouton anglais
-    fireEvent.press(screen.getByText('English'));
-    
-    // Vérifier que changeLanguage a été appelé avec 'en'
-    expect(i18nModule.changeLanguage).toHaveBeenCalledWith('en');
-  });
+    const buttonDarkTheme = screen.getByTestId('language-selector-button');
+    expect(within(buttonDarkTheme).getByText('English')).toBeTruthy();
 
-  // Test pour vérifier le rendu avec le thème sombre
-  test('rend correctement avec le thème sombre', () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <ThemeContext.Provider
-        value={{
-          theme: DarkTheme,
-          isDark: true,
-          toggleTheme: jest.fn()
-        }}
-      >
-        {children}
-      </ThemeContext.Provider>
-    );
-
-    render(<LanguageSelector />, { wrapper });
+    await act(async () => {
+      fireEvent.press(buttonDarkTheme); 
+    });
     
-    // Vérifier que les deux langues sont affichées
-    expect(screen.getByText('English')).toBeTruthy();
-    expect(screen.getByText('Français')).toBeTruthy();
+    const englishModalOption = await screen.findByTestId('language-option-en');
+    const frenchModalOption = await screen.findByTestId('language-option-fr');
+    expect(englishModalOption).toBeTruthy();
+    expect(frenchModalOption).toBeTruthy();
+
+    expect(englishModalOption.props.children[0].props.style).toEqual(expect.arrayContaining([
+        expect.objectContaining({ fontWeight: 'bold', color: DarkTheme.colors.primary })
+    ]));
+
+    await act(async () => {
+      fireEvent.press(frenchModalOption); 
+    });
+
+    expect(mockSystemChangeLanguage).toHaveBeenCalledWith('fr');
+    const finalButtonDarkTheme = await screen.findByTestId('language-selector-button');
+    expect(within(finalButtonDarkTheme).getByText('Français')).toBeTruthy();
+    expect(screen.queryByTestId('language-option-en')).toBeNull();
   });
 }); 
