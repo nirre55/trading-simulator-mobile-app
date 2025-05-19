@@ -98,7 +98,7 @@
   "cards": {
     "result": "Résultat",
     "theoreticalIterations": "Nombre d'itérations théorique",
-    "iterationRange": "Il faut entre {min} et {max} itérations pour atteindre ou dépasser {price} $.",
+    "iterationRange": "Il faut entre {{min}} et {{max}} itérations pour atteindre ou dépasser {{price}} $.",
     "minResult": "Résultat min.",
     "maxResult": "Résultat max.",
     "iterations": "itérations",
@@ -107,13 +107,13 @@
     "tradesCount": "Nombre de trades:",
     "amountPerTrade": "Montant par trade:",
     "recommendedLeverage": "Levier recommandé:",
-    "leverageInfo": "Basé sur une réduction de {reduction}% par itération",
+    "leverageInfo": "Basé sur une réduction de {{reduction}}% par itération",
     "noIterationDetails": "Aucun détail d'itération disponible."
   },
   "tables": {
     "iterationDetails": "Détails des Itérations",
     "lossRecovery": "Récupération des pertes",
-    "lossRecoveryInfo": "Avec récupération des pertes, le profit inclut le montant {amount}$ multiplié par (numéro d'itération - 1). Le prix de sortie est également ajusté pour atteindre ce profit.",
+    "lossRecoveryInfo": "Avec récupération des pertes, le profit inclut le montant {{amount}}$ multiplié par (numéro d'itération - 1). Le prix de sortie est également ajusté pour atteindre ce profit.",
     "iteration": "Itération",
     "entryPrice": "Prix d'entrée ($)",
     "exitPrice": "Prix de sortie ($)",

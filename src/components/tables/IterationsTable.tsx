@@ -72,23 +72,21 @@ const IterationsTable: React.FC<Props> = ({
   
   return (
     <View style={[styles.card, styles.iterationsCard]}>
-      <View style={styles.iterationsCardHeaderWithSwitch}>
-        <View style={styles.cardHeader}>
-          <MaterialCommunityIcons name="table" size={22} color={theme.colors.primary} />
-          <Text style={styles.cardTitle}>{t('tables.iterationDetails')}</Text>
-        </View>
-        <View style={styles.iterationsSwitchContainer}>
-          <Text style={[styles.secondaryText, { marginRight: 8, fontSize: 13 }]}>
-            {t('tables.lossRecovery')}
-          </Text>
-          <Switch
-            value={isRecoveryEnabled}
-            onValueChange={setIsRecoveryEnabled}
-            trackColor={{ false: theme.dark ? '#444' : '#d3d3d3', true: theme.colors.primary }}
-            thumbColor={isRecoveryEnabled ? '#fff' : '#f4f3f4'}
-            ios_backgroundColor={theme.dark ? '#444' : '#d3d3d3'}
-          />
-        </View>
+      <View style={styles.cardHeader}>
+        <MaterialCommunityIcons name="table" size={22} color={theme.colors.primary} />
+        <Text style={styles.cardTitle}>{t('tables.iterationDetails')}</Text>
+      </View>
+      <View style={[styles.iterationsSwitchContainer, { paddingHorizontal: 5 }]}>
+        <Text style={[styles.secondaryText, { fontSize: 14 }]}>
+          {t('tables.lossRecovery')}
+        </Text>
+        <Switch
+          value={isRecoveryEnabled}
+          onValueChange={setIsRecoveryEnabled}
+          trackColor={{ false: theme.dark ? '#444' : '#d3d3d3', true: theme.colors.primary }}
+          thumbColor={isRecoveryEnabled ? '#fff' : '#f4f3f4'}
+          ios_backgroundColor={theme.dark ? '#444' : '#d3d3d3'}
+        />
       </View>
       <View style={styles.dividerStyle} />
       
