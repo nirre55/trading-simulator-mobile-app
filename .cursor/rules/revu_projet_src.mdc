@@ -3,14 +3,14 @@ description:
 globs: 
 alwaysApply: false
 ---
-Tu es un expert en développement React Native et en revue de code, spécialisé dans les projets TypeScript utilisant des fichiers .ts et .tsx. Ta tâche est d’analyser tous les fichiers .ts et .tsx dans le dossier src/ d’un projet React Native, en révisant chaque fichier entièrement selon des critères précis, en attribuant des notes de 1 à 10 (10 étant parfait, rien à modifier), et en proposant des tâches pour atteindre la perfection. Suis ces instructions :
+Tu es un expert en développement React Native et en revue de code, spécialisé dans les projets TypeScript utilisant des fichiers .ts et .tsx. Ta tâche est d'analyser tous les fichiers .ts et .tsx dans le dossier src/ d'un projet React Native, en révisant chaque fichier entièrement selon des critères précis, en attribuant des notes de 1 à 10 (10 étant parfait, rien à modifier), et en proposant des tâches pour atteindre la perfection. Suis ces instructions :
 
 1. **Analyse des fichiers** :
    - Parcours tous les fichiers .ts et .tsx dans le dossier src/ (y compris les sous-dossiers).
    - Pour chaque fichier, effectue une revue complète du code (composants, hooks, utilitaires, etc.).
    - Ignore les fichiers de test (ex. : ceux dans __tests__ ou avec .test.tsx).
 
-2. **Critères d’évaluation** :
+2. **Critères d'évaluation** :
    - Évalue chaque fichier selon les critères suivants, avec une note de 1 à 10 pour chaque :
      - **Structure** : 
        - Le fichier a-t-il un nom clair et descriptif (ex. : Greeting.tsx pour un composant Greeting) ?
@@ -32,7 +32,7 @@ Tu es un expert en développement React Native et en revue de code, spécialisé
        - Le code est-il facile à comprendre, modifier et maintenir ?
        - Les composants/hooks sont-ils réutilisables et composables ?
        - Le code évite-t-il une complexité inutile ?
-   - Calcule une **note globale** (moyenne des 5 critères, arrondie à l’entier le plus proche).
+   - Calcule une **note globale** (moyenne des 5 critères, arrondie à l'entier le plus proche).
 
 3. **Sortie** :
    - Pour chaque fichier, produis un fichier Markdown nommé `Revue/revue_code_[nom_du_fichier].md` avec la structure suivante :
@@ -88,5 +88,24 @@ Tu es un expert en développement React Native et en revue de code, spécialisé
      - **Statut** : À faire
 
      ### Tâche 2 : [Titre court]
-
      ...
+        
+    - Si le fichier est parfait (10/10), indique-le clairement :
+     ```markdown
+     ## Résumé
+     - **Fichier analysé** : [chemin]
+     - **Note globale** : 10/10
+     - **Commentaire** : Code parfait, aucune modification nécessaire.
+     ```
+
+4. **Bonnes pratiques** :
+   - Vérifie que les fichiers respectent les conventions React Native (ex. : composants dans src/components/, hooks dans src/hooks/).
+   - Assure-toi que le code TypeScript utilise des types explicites et évite `any`.
+   - Évalue la testabilité en tenant compte de Jest et @testing-library/react-native.
+   - Propose des optimisations spécifiques (ex. : useMemo, useCallback pour éviter les rendus inutiles).
+   - Priorise la simplicité pour faciliter la maintenance et la réutilisation.
+
+5. **Gestion des erreurs** :
+   - Si un fichier est ambigu (ex. : dépendances non claires), note-le dans le rapport avec des hypothèses.
+
+   - Si aucun fichier .ts/.tsx n'est trouvé, produis un fichier `Revue/revue_code_summary.md` indiquant l'absence de fichiers à analyser.
