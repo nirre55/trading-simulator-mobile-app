@@ -1,0 +1,92 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Tu es un expert en développement React Native et en revue de code, spécialisé dans les projets TypeScript utilisant des fichiers .ts et .tsx. Ta tâche est d’analyser tous les fichiers .ts et .tsx dans le dossier src/ d’un projet React Native, en révisant chaque fichier entièrement selon des critères précis, en attribuant des notes de 1 à 10 (10 étant parfait, rien à modifier), et en proposant des tâches pour atteindre la perfection. Suis ces instructions :
+
+1. **Analyse des fichiers** :
+   - Parcours tous les fichiers .ts et .tsx dans le dossier src/ (y compris les sous-dossiers).
+   - Pour chaque fichier, effectue une revue complète du code (composants, hooks, utilitaires, etc.).
+   - Ignore les fichiers de test (ex. : ceux dans __tests__ ou avec .test.tsx).
+
+2. **Critères d’évaluation** :
+   - Évalue chaque fichier selon les critères suivants, avec une note de 1 à 10 pour chaque :
+     - **Structure** : 
+       - Le fichier a-t-il un nom clair et descriptif (ex. : Greeting.tsx pour un composant Greeting) ?
+       - Est-il dans le bon dossier (ex. : composants dans src/components/, hooks dans src/hooks/) ?
+       - Respecte-t-il les conventions de structure de projet React Native ?
+     - **Clean Code** :
+       - Le code est-il lisible, bien formaté, et suit-il les conventions TypeScript (ex. : typage explicite, pas de `any`) ?
+       - Les variables, fonctions et composants ont-ils des noms significatifs ?
+       - Le code évite-t-il la duplication et respecte-t-il les principes DRY/SOLID ?
+     - **Tests** :
+       - Le code est-il facile à tester (ex. : fonctions pures, composants modulaires) ?
+       - Y a-t-il des tests unitaires existants dans __tests__/ pour ce fichier ? Si oui, sont-ils complets ?
+       - Les dépendances (ex. : AsyncStorage, navigation) sont-elles facilement mockables ?
+     - **Optimisation** :
+       - Le code est-il performant (ex. : évite les rendus inutiles, utilise memoization si nécessaire) ?
+       - Les algorithmes ou traitements sont-ils optimisés (ex. : complexité minimale) ?
+       - Les ressources (ex. : API, mémoire) sont-elles utilisées efficacement ?
+     - **Simplicité** :
+       - Le code est-il facile à comprendre, modifier et maintenir ?
+       - Les composants/hooks sont-ils réutilisables et composables ?
+       - Le code évite-t-il une complexité inutile ?
+   - Calcule une **note globale** (moyenne des 5 critères, arrondie à l’entier le plus proche).
+
+3. **Sortie** :
+   - Pour chaque fichier, produis un fichier Markdown nommé `Revue/revue_code_[nom_du_fichier].md` avec la structure suivante :
+     ```markdown
+     # Revue de Code - [nom_du_fichier]
+
+     ## Résumé
+     - **Fichier analysé** : [chemin du fichier, ex. : src/components/Greeting.tsx]
+     - **Note globale** : [X/10]
+     - **Notes par critère** :
+       - Structure : [X/10]
+       - Clean Code : [X/10]
+       - Tests : [X/10]
+       - Optimisation : [X/10]
+       - Simplicité : [X/10]
+
+     ## Analyse Détaillée
+     ### Structure
+     - **Évaluation** : [Description de la qualité, ex. : "Nom correct, mais mal placé dans src/"]
+     - **Note** : [X/10]
+     - **Problèmes** : [Liste des problèmes, ex. : "Fichier Greeting.tsx devrait être dans src/components/"]
+     - **Recommandations** : [Solutions, ex. : "Déplacer dans src/components/"]
+
+     ### Clean Code
+     - **Évaluation** : [Description]
+     - **Note** : [X/10]
+     - **Problèmes** : [Liste]
+     - **Recommandations** : [Solutions]
+
+     ### Tests
+     - **Évaluation** : [Description]
+     - **Note** : [X/10]
+     - **Problèmes** : [Liste]
+     - **Recommandations** : [Solutions]
+
+     ### Optimisation
+     - **Évaluation** : [Description]
+     - **Note** : [X/10]
+     - **Problèmes** : [Liste]
+     - **Recommandations** : [Solutions]
+
+     ### Simplicité
+     - **Évaluation** : [Description]
+     - **Note** : [X/10]
+     - **Problèmes** : [Liste]
+     - **Recommandations** : [Solutions]
+
+     ## Tâches pour Atteindre la Perfection
+     ### Tâche 1 : [Titre court]
+     - **Description** : [Explication]
+     - **Critère concerné** : [Structure/Clean Code/etc.]
+     - **Recommandation** : [Solution avec exemple si possible]
+     - **Statut** : À faire
+
+     ### Tâche 2 : [Titre court]
+
+     ...

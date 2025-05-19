@@ -33,11 +33,17 @@ const LanguageSelector: React.FC = () => {
     <View>
       <TouchableOpacity 
         testID="language-selector-button"
-        style={[themedStyles.settingsOptionRow, localStyles.selectorButton]}
+        style={localStyles.selectorButton}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={[themedStyles.text, { flex: 1 }]}>{currentLanguage.name}</Text>
-        <Ionicons name="chevron-down" size={20} color={theme.colors.text} />
+        <Ionicons 
+          name="language-outline"
+          size={22} 
+          color={theme.colors.primary} 
+          style={localStyles.leftIconStyle}
+        />
+        <Text style={[themedStyles.text, localStyles.languageText]}>{currentLanguage.name}</Text>
+        <Ionicons name="chevron-down" size={22} color={theme.colors.text} />
       </TouchableOpacity>
 
       <Modal
@@ -75,8 +81,17 @@ const LanguageSelector: React.FC = () => {
 
 const localStyles = StyleSheet.create({
   selectorButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 12,
     paddingHorizontal: 5,
+  },
+  leftIconStyle: {
+    marginRight: 10,
+  },
+  languageText: {
+    flex: 1,
   },
   modalOverlay: {
     flex: 1,
