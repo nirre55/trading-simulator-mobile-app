@@ -1,4 +1,4 @@
-import { calculateIterations, CalculationResult, IterationDetail } from "../utils/calculator";
+import { calculateIterations } from "../utils/calculator";
 
 // Tests pour validateInputs (fonction interne)
 describe("validation des entrées", () => {
@@ -63,12 +63,17 @@ describe("calcul du prix de sortie et du profit", () => {
     expect(result.success).toBe(true);
     expect(result.iterationDetails).toBeDefined();
 
-    if (result.iterationDetails && result.allocationPerTrade && result.leverage) {
+    if (
+      result.iterationDetails &&
+      result.allocationPerTrade &&
+      result.leverage
+    ) {
       const firstIteration = result.iterationDetails[0];
       // Allocation par trade = 1000 / 7 = 142.86
       // Levier = 10
       // Profit = (120 - 100) * (142.86 * 10 / 100) = 20 * 14.286 = 285.72
-      const expectedProfit = (120 - 100) * ((result.allocationPerTrade * result.leverage) / 100);
+      const expectedProfit =
+        (120 - 100) * ((result.allocationPerTrade * result.leverage) / 100);
       expect(firstIteration.profit).toBeCloseTo(expectedProfit);
     }
   });
