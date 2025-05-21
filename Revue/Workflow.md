@@ -1,52 +1,67 @@
-Je vais te proposer un **workflow complet** pour la revue, la correction et la validation du code dans ton projet React Native en TypeScript, avec trois étapes impliquant deux experts virtuels (Expert X pour la revue/validation et Expert Y pour la correction). Ce workflow utilise des **prompts** pour le **Chat de Revue** et le **Chat de Développement** dans Cursor, des **scripts Python** pour automatiser les tâches, et s’intègre à ton structure existante (`src/`, `__tests__/`, `Revue/`, `Revue/Archives/`). Je vais détailler chaque étape, fournir les prompts, les scripts, et expliquer comment tout connecter, y compris une intégration CI/CD pour automatiser le processus. Enfin, je répondrai à ta demande de déplacer les fichiers `.md` validés dans `Revue/Archives/` ou de renvoyer les fichiers non validés pour correction.
+Je vais modifier le workflow pour intégrer la revue des fichiers de test associés (par exemple, `src/__tests__/test_Greeting.test.tsx` pour `src/components/Greeting.tsx`) par l’Expert X lors de la revue initiale et de la validation. L’Expert X inclura l’analyse des tests dans le fichier de revue `Revue/revue_code_[nom_du_fichier].md`, avec des tâches spécifiques pour améliorer les tests si nécessaire. Je vais fournir un **prompt mis à jour** pour la revue initiale et la validation, un **script Python** adapté pour gérer les fichiers de test, et expliquer comment cela s’intègre dans le workflow complet (revue, correction, validation, archivage). Le fichier de revue combinera l’analyse du code source et des tests, avec des tâches clairement identifiées pour chaque fichier.
 
 ---
 
-## Workflow Complet
+## Workflow Mis à Jour
 
-Le workflow se compose de trois étapes principales, orchestrées par deux experts virtuels :
+Le workflow reste structuré en trois étapes avec deux experts virtuels (Expert X pour la revue/validation, Expert Y pour la correction), mais l’Expert X analyse désormais à la fois le fichier source (ex. : `src/components/Greeting.tsx`) et son fichier de test associé (ex. : `src/__tests__/test_Greeting.test.tsx`) lors de la revue initiale et de la validation. Voici les modifications principales :
 
-1. **Expert X : Revue initiale du code**  
-   - Analyse tous les fichiers `.ts` et `.tsx` dans `src/`.
-   - Génère un fichier Markdown (`Revue/revue_code_[nom_du_fichier].md`) pour chaque fichier, avec une évaluation basée sur les critères **Structure**, **Clean Code**, **Tests**, **Optimisation**, et **Simplicité**, des notes de 1 à 10, et des tâches pour atteindre la perfection (10/10).
+1. **Expert X : Revue initiale du code et des tests**
 
-2. **Expert Y : Correction des commentaires**  
-   - Prend chaque fichier de revue et le fichier de code correspondant.
-   - Corrige le code selon les recommandations du fichier `.md`.
-   - Met à jour le fichier `.md` en marquant les tâches comme "Résolu" ou en ajoutant de nouvelles tâches si nécessaire.
-   - Crée ou met à jour les tests unitaires dans `__tests__/`.
+   - Analyse le fichier source (`.ts` ou `.tsx`) dans `src/`.
+   - Si un fichier de test existe dans `src/__tests__/` (ex. : `test_[nom_du_fichier].test.tsx`), l’analyse également.
+   - Génère un fichier Markdown (`Revue/revue_code_[nom_du_fichier].md`) avec :
+     - Une section pour le fichier source (évaluation selon **Structure**, **Clean Code**, **Tests**, **Optimisation**, **Simplicité**).
+     - Une section pour le fichier de test (évaluation selon **Structure**, **Clean Code**, **Couverture**, **Clarté**, **Robustesse**).
+     - Des tâches pour améliorer le fichier source et le fichier de test.
+   - Si aucun fichier de test n’existe, recommande d’en créer un dans la section **Tests** du fichier source.
 
-3. **Expert X : Validation des corrections**  
-   - Réanalyse le fichier corrigé pour vérifier si les tâches ont été correctement adressées.
-   - Génère un nouveau fichier `.md` (`Revue/revue_code_[nom_du_fichier]_iteration[N].md`) avec les résultats.
-   - Si la note globale est 10/10 (toutes les tâches résolues, aucun nouveau problème), déplace le fichier `.md` (et ses itérations) dans `Revue/Archives/`.
+2. **Expert Y : Correction des commentaires**
+
+   - Corrige le fichier source et le fichier de test (ou en crée un si nécessaire) selon les tâches du fichier `.md`.
+   - Met à jour le fichier `.md` en marquant les tâches comme "Résolu" ou en ajoutant de nouvelles tâches.
+   - Les corrections incluent les recommandations pour les tests (ex. : ajouter des cas limites, améliorer les mocks).
+
+3. **Expert X : Validation des corrections**
+   - Réanalyse le fichier source et le fichier de test corrigés.
+   - Génère un nouveau fichier `.md` (`Revue/revue_code_[nom_du_fichier]_iteration[N].md`) avec les résultats pour les deux fichiers.
+   - Si la note globale est 10/10 (source et tests parfaits), déplace tous les fichiers `.md` associés dans `Revue/Archives/`.
    - Sinon, renvoie le fichier `.md` à l’Expert Y pour une nouvelle correction.
-
-Ce workflow est automatisé via des scripts Python pour générer les prompts et gérer les fichiers, avec une intégration CI/CD pour exécuter les étapes après chaque push. Les tests unitaires sont exécutés à chaque validation pour garantir la qualité.
 
 ---
 
 ## Détails du Workflow
 
-### Étape 1 : Expert X - Revue initiale du code
+### Étape 1 : Expert X - Revue initiale du code et des tests
 
-**Objectif** : L’Expert X analyse tous les fichiers `.ts` et `.tsx` dans `src/` et produit un fichier de revue `.md` pour chaque fichier.
+**Objectif** : L’Expert X analyse le fichier source et son fichier de test associé (s’il existe), puis produit un fichier de revue combiné dans `Revue/`.
 
 **Prompt pour le Chat de Revue** :
-```plaintext
-Tu es un expert en revue de code pour des projets React Native en TypeScript, spécialisé dans l’évaluation de la qualité du code. Ta tâche est d’analyser un fichier .ts ou .tsx dans src/ selon les critères Structure, Clean Code, Tests, Optimisation et Simplicité, en attribuant une note de 1 à 10 pour chaque critère et une note globale. Génère un fichier Markdown nommé `Revue/revue_code_[nom_du_fichier].md` avec une analyse détaillée et des tâches pour atteindre 10/10.
 
-1. **Analyse du fichier** :
-   - Analyse le fichier fourni (ex. : src/components/[nom_du_fichier].tsx).
-   - Ignore les fichiers de test (ex. : __tests__/, *.test.tsx).
+````plaintext
+Tu es un expert en revue de code pour des projets React Native en TypeScript, spécialisé dans l’évaluation de la qualité du code et des tests unitaires. Ta tâche est d’analyser un fichier .ts ou .tsx dans src/ et son fichier de test associé dans src/__tests__/ (s’il existe), selon des critères spécifiques. Génère un fichier Markdown nommé `Revue/revue_code_[nom_du_fichier].md` avec une analyse détaillée des deux fichiers et des tâches pour atteindre la perfection (note globale 10/10).
+
+1. **Analyse des fichiers** :
+   - **Fichier source** : Analyse le fichier fourni (ex. : src/components/[nom_du_fichier].tsx).
+   - **Fichier de test** : Si un fichier src/__tests__/test_[nom_du_fichier].test.tsx existe, analyse-le. Sinon, note l’absence de tests dans la section Tests du fichier source.
+   - Ignore les fichiers qui ne sont pas des sources ou tests principaux (ex. : *.spec.tsx).
 
 2. **Critères d’évaluation** :
-   - **Structure** : Nom du fichier, emplacement (ex. : src/components/), conventions React Native.
-   - **Clean Code** : Lisibilité, typage TypeScript, absence de duplication, conventions.
-   - **Tests** : Testabilité, présence/qualité des tests dans __tests__/.
-   - **Optimisation** : Performance, memoization, gestion des ressources.
-   - **Simplicité** : Facilité de maintenance, réutilisabilité, absence de complexité.
-   - Note globale : Moyenne des 5 critères, arrondie.
+   - **Fichier source** :
+     - **Structure** : Nom du fichier, emplacement (ex. : src/components/), conventions React Native.
+     - **Clean Code** : Lisibilité, typage TypeScript, absence de duplication, conventions.
+     - **Tests** : Testabilité du code, présence/qualité des tests dans src/__tests__/.
+     - **Optimisation** : Performance, memoization, gestion des ressources.
+     - **Simplicité** : Facilité de maintenance, réutilisabilité, absence de complexité.
+     - Note globale source : Moyenne des 5 critères, arrondie.
+   - **Fichier de test** (si présent) :
+     - **Structure** : Nom du fichier, emplacement (ex. : src/__tests__/), organisation des tests.
+     - **Clean Code** : Lisibilité, conventions Jest/@testing-library/react-native.
+     - **Couverture** : Couverture des cas (normaux, limites, erreurs), mocks appropriés.
+     - **Clarté** : Descriptions claires des tests (ex. : `it` descriptifs).
+     - **Robustesse** : Tests fiables, pas de dépendances fragiles.
+     - Note globale tests : Moyenne des 5 critères, arrondie.
+   - **Note globale combinée** : Moyenne des notes globales du fichier source et du fichier de test (ou seulement source si pas de tests), arrondie.
 
 3. **Sortie** :
    - Fichier Markdown : `Revue/revue_code_[nom_du_fichier].md` :
@@ -54,17 +69,34 @@ Tu es un expert en revue de code pour des projets React Native en TypeScript, sp
      # Revue de Code - [nom_du_fichier]
 
      ## Résumé
-     - **Fichier analysé** : [chemin]
-     - **Note globale** : [X/10]
-     - **Notes par critère** :
+     - **Fichier source analysé** : [chemin, ex. : src/components/Greeting.tsx]
+     - **Fichier de test analysé** : [chemin, ex. : src/__tests__/test_Greeting.test.tsx ou "Aucun"]
+     - **Note globale combinée** : [X/10]
+     - **Note globale source** : [X/10]
+     - **Notes par critère (source)** :
        - Structure : [X/10]
        - Clean Code : [X/10]
        - Tests : [X/10]
        - Optimisation : [X/10]
        - Simplicité : [X/10]
+     - **Note globale tests** : [X/10 ou "N/A"]
+     - **Notes par critère (tests)** :
+       - Structure : [X/10]
+       - Clean Code : [X/10]
+       - Couverture : [X/10]
+       - Clarté : [X/10]
+       - Robustesse : [X/10]
 
      ## Analyse Détaillée
-     ### Structure
+     ### Fichier Source
+     #### Structure
+     - **Évaluation** : [Description]
+     - **Note** : [X/10]
+     - **Problèmes** : [Liste]
+     - **Recommandations** : [Solutions]
+     ...
+     ### Fichier de Test
+     #### Structure
      - **Évaluation** : [Description]
      - **Note** : [X/10]
      - **Problèmes** : [Liste]
@@ -73,38 +105,47 @@ Tu es un expert en revue de code pour des projets React Native en TypeScript, sp
 
      ## Tâches pour Atteindre la Perfection
      ### Tâche 1 : [Titre]
+     - **Fichier concerné** : [Source ou Test]
      - **Description** : [Explication]
      - **Critère concerné** : [Critère]
      - **Recommandation** : [Solution]
      - **Statut** : À faire
      ...
      ```
-   - Si parfait (10/10), indique : "Code parfait, aucune modification nécessaire."
+   - Si aucun test n’existe, recommande la création dans la section Tests du fichier source.
+   - Si parfait (10/10 pour source et tests), indique : "Code et tests parfaits, aucune modification nécessaire."
 
 4. **Bonnes pratiques** :
-   - Respecte les conventions React Native et TypeScript.
-   - Vérifie la testabilité avec Jest/@testing-library/react-native.
-   - Propose des optimisations spécifiques (ex. : React.memo).
+   - Respecte les conventions React Native et TypeScript pour le source.
+   - Vérifie les tests avec Jest/@testing-library/react-native, mocks pour modules natifs (ex. : AsyncStorage).
+   - Propose des optimisations spécifiques (ex. : React.memo, cas limites dans les tests).
 
 5. **Gestion des erreurs** :
-   - Si le fichier est ambigu, note les hypothèses dans le rapport.
+   - Si le fichier de test est absent, note-le explicitement.
+   - Si un fichier est ambigu, documente les hypothèses.
 
-Fichier à analyser : [Coller le contenu du fichier .ts/.tsx]
-Fichier analysé : [Chemin, ex. : src/components/Greeting.tsx]
-```
+Fichier source à analyser : [Coller le contenu du fichier .ts/.tsx]
+Fichier de test à analyser : [Coller le contenu du fichier .test.tsx ou "Aucun"]
+Fichier source analysé : [Chemin, ex. : src/components/Greeting.tsx]
+Fichier de test analysé : [Chemin, ex. : src/__tests__/test_Greeting.test.tsx ou "Aucun"]
+````
 
 **Script Python pour générer les prompts de revue** :
-```python
+Ce script analyse tous les fichiers `.ts` et `.tsx` dans `src/`, recherche les fichiers de test associés dans `src/__tests__/`, et génère des prompts pour le **Chat de Revue**.
+
+````python
 import os
 import glob
 
 def generate_review_prompts(src_dir):
-    """Génère des prompts pour la revue de tous les fichiers .ts/.tsx dans src/."""
+    """Génère des prompts pour la revue des fichiers .ts/.tsx et leurs tests associés."""
     revue_dir = "Revue"
     os.makedirs(revue_dir, exist_ok=True)
 
+    # Trouver tous les fichiers .ts/.tsx dans src/, exclure les tests
     files = glob.glob(os.path.join(src_dir, "**", "*.ts"), recursive=True) + \
             glob.glob(os.path.join(src_dir, "**", "*.tsx"), recursive=True)
+    files = [f for f in files if "__tests__" not in f and not f.endswith(".test.ts") and not f.endswith(".test.tsx")]
 
     if not files:
         print(f"Aucun fichier .ts ou .tsx trouvé dans {src_dir}")
@@ -113,32 +154,53 @@ def generate_review_prompts(src_dir):
         return
 
     for file_path in files:
-        if "__tests__" in file_path or file_path.endswith(".test.ts") or file_path.endswith(".test.tsx"):
-            continue
-
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
-                file_content = f.read()
+                src_content = f.read()
         except Exception as e:
             print(f"Erreur lors de la lecture de {file_path}: {e}")
             continue
 
         file_name = os.path.splitext(os.path.basename(file_path))[0]
+        test_file = os.path.join(src_dir, "__tests__", f"test_{file_name}.test.tsx")
+        test_content = "Aucun"
+        test_file_path = "Aucun"
+
+        # Vérifier si le fichier de test existe
+        if os.path.exists(test_file):
+            try:
+                with open(test_file, 'r', encoding='utf-8') as f:
+                    test_content = f.read()
+                test_file_path = test_file
+            except Exception as e:
+                print(f"Erreur lors de la lecture de {test_file}: {e}")
+                test_content = "Aucun"
+                test_file_path = "Aucun"
+
         prompt_file = os.path.join(revue_dir, f"prompt_revue_code_{file_name}.txt")
+        prompt_content = f"""Tu es un expert en revue de code pour des projets React Native en TypeScript, spécialisé dans l’évaluation de la qualité du code et des tests unitaires. Ta tâche est d’analyser un fichier .ts ou .tsx dans src/ et son fichier de test associé dans src/__tests__/ (s’il existe), selon des critères spécifiques. Génère un fichier Markdown nommé `Revue/revue_code_{file_name}.md` avec une analyse détaillée des deux fichiers et des tâches pour atteindre la perfection (note globale 10/10).
 
-        prompt_content = f"""Tu es un expert en revue de code pour des projets React Native en TypeScript, spécialisé dans l’évaluation de la qualité du code. Ta tâche est d’analyser un fichier .ts ou .tsx dans src/ selon les critères Structure, Clean Code, Tests, Optimisation et Simplicité, en attribuant une note de 1 à 10 pour chaque critère et une note globale. Génère un fichier Markdown nommé `Revue/revue_code_{file_name}.md` avec une analyse détaillée et des tâches pour atteindre 10/10.
-
-1. **Analyse du fichier** :
-   - Analyse le fichier fourni (ex. : src/components/{file_name}.tsx).
-   - Ignore les fichiers de test (ex. : __tests__/, *.test.tsx).
+1. **Analyse des fichiers** :
+   - **Fichier source** : Analyse le fichier fourni (ex. : src/components/{file_name}.tsx).
+   - **Fichier de test** : Si un fichier src/__tests__/test_{file_name}.test.tsx existe, analyse-le. Sinon, note l’absence de tests dans la section Tests du fichier source.
+   - Ignore les fichiers qui ne sont pas des sources ou tests principaux (ex. : *.spec.tsx).
 
 2. **Critères d’évaluation** :
-   - **Structure** : Nom du fichier, emplacement (ex. : src/components/), conventions React Native.
-   - **Clean Code** : Lisibilité, typage TypeScript, absence de duplication, conventions.
-   - **Tests** : Testabilité, présence/qualité des tests dans __tests__/.
-   - **Optimisation** : Performance, memoization, gestion des ressources.
-   - **Simplicité** : Facilité de maintenance, réutilisabilité, absence de complexité.
-   - Note globale : Moyenne des 5 critères, arrondie.
+   - **Fichier source** :
+     - **Structure** : Nom du fichier, emplacement (ex. : src/components/), conventions React Native.
+     - **Clean Code** : Lisibilité, typage TypeScript, absence de duplication, conventions.
+     - **Tests** : Testabilité du code, présence/qualité des tests dans src/__tests__/.
+     - **Optimisation** : Performance, memoization, gestion des ressources.
+     - **Simplicité** : Facilité de maintenance, réutilisabilité, absence de complexité.
+     - Note globale source : Moyenne des 5 critères, arrondie.
+   - **Fichier de test** (si présent) :
+     - **Structure** : Nom du fichier, emplacement (ex. : src/__tests__/), organisation des tests.
+     - **Clean Code** : Lisibilité, conventions Jest/@testing-library/react-native.
+     - **Couverture** : Couverture des cas (normaux, limites, erreurs), mocks appropriés.
+     - **Clarté** : Descriptions claires des tests (ex. : `it` descriptifs).
+     - **Robustesse** : Tests fiables, pas de dépendances fragiles.
+     - Note globale tests : Moyenne des 5 critères, arrondie.
+   - **Note globale combinée** : Moyenne des notes globales du fichier source et du fichier de test (ou seulement source si pas de tests), arrondie.
 
 3. **Sortie** :
    - Fichier Markdown : `Revue/revue_code_{file_name}.md` :
@@ -146,17 +208,34 @@ def generate_review_prompts(src_dir):
      # Revue de Code - {file_name}
 
      ## Résumé
-     - **Fichier analysé** : {file_path}
-     - **Note globale** : [X/10]
-     - **Notes par critère** :
+     - **Fichier source analysé** : {file_path}
+     - **Fichier de test analysé** : {test_file_path}
+     - **Note globale combinée** : [X/10]
+     - **Note globale source** : [X/10]
+     - **Notes par critère (source)** :
        - Structure : [X/10]
        - Clean Code : [X/10]
        - Tests : [X/10]
        - Optimisation : [X/10]
        - Simplicité : [X/10]
+     - **Note globale tests** : [X/10 ou "N/A"]
+     - **Notes par critère (tests)** :
+       - Structure : [X/10]
+       - Clean Code : [X/10]
+       - Couverture : [X/10]
+       - Clarté : [X/10]
+       - Robustesse : [X/10]
 
      ## Analyse Détaillée
-     ### Structure
+     ### Fichier Source
+     #### Structure
+     - **Évaluation** : [Description]
+     - **Note** : [X/10]
+     - **Problèmes** : [Liste]
+     - **Recommandations** : [Solutions]
+     ...
+     ### Fichier de Test
+     #### Structure
      - **Évaluation** : [Description]
      - **Note** : [X/10]
      - **Problèmes** : [Liste]
@@ -165,28 +244,40 @@ def generate_review_prompts(src_dir):
 
      ## Tâches pour Atteindre la Perfection
      ### Tâche 1 : [Titre]
+     - **Fichier concerné** : [Source ou Test]
      - **Description** : [Explication]
      - **Critère concerné** : [Critère]
      - **Recommandation** : [Solution]
      - **Statut** : À faire
      ...
      ```
-   - Si parfait (10/10), indique : "Code parfait, aucune modification nécessaire."
+   - Si aucun test n’existe, recommande la création dans la section Tests du fichier source.
+   - If perfect (10/10 for source and tests), indicate: "Code and tests perfect, no further changes needed."
 
 4. **Bonnes pratiques** :
-   - Respecte les conventions React Native et TypeScript.
-   - Vérifie la testabilité avec Jest/@testing-library/react-native.
-   - Propose des optimisations spécifiques (ex. : React.memo).
+   - Respecte les conventions React Native et TypeScript pour le source.
+   - Vérifie les tests avec Jest/@testing-library/react-native, mocks pour modules natifs (ex. : AsyncStorage).
+   - Propose des optimisations spécifiques (ex. : React.memo, cas limites dans les tests).
 
 5. **Gestion des erreurs** :
-   - Si le fichier est ambigu, note les hypothèses dans le rapport.
+   - Si le fichier de test est absent, note-le explicitement.
+   - Si un fichier est ambigu, documente les hypothèses.
 
-Fichier à analyser :
+Fichier source à analyser :
 ```typescript
-{file_content}
+{src_content}
+````
+
+Fichier de test à analyser :
+
+```typescript
+{
+  test_content;
+}
 ```
 
-Fichier analysé : {file_path}
+Fichier source analysé : {file_path}
+Fichier de test analysé : {test_file_path}
 """
 
         try:
@@ -196,14 +287,15 @@ Fichier analysé : {file_path}
         except Exception as e:
             print(f"Erreur lors de l'écriture de {prompt_file}: {e}")
 
-if __name__ == "__main__":
-    src_directory = "src"
-    if not os.path.isdir(src_directory):
-        print(f"Erreur : Le dossier {src_directory} n’existe pas.")
-    else:
-        generate_review_prompts(src_directory)
-        print("Succès : Tous les prompts de revue ont été générés dans le dossier Revue/.")
-```
+if **name** == "**main**":
+src_directory = "src"
+if not os.path.isdir(src_directory):
+print(f"Erreur : Le dossier {src_directory} n’existe pas.")
+else:
+generate_review_prompts(src_directory)
+print("Succès : Tous les prompts de revue ont été générés dans le dossier Revue/.")
+
+````
 
 **Exécution** :
 1. Enregistre le script comme `generate_review_prompts.py`.
@@ -211,82 +303,178 @@ if __name__ == "__main__":
 3. Soumets chaque fichier `Revue/prompt_revue_code_[nom_du_fichier].txt` au **Chat de Revue**.
 4. Le chat génère `Revue/revue_code_[nom_du_fichier].md`.
 
-**Exemple de fichier généré** (pour `src/components/Greeting.tsx`) :
+**Exemple de fichier généré** (pour `src/components/Greeting.tsx` et `src/__tests__/test_Greeting.test.tsx`) :
 ```markdown
 # Revue de Code - Greeting
 
 ## Résumé
-- **Fichier analysé** : src/components/Greeting.tsx
-- **Note globale** : 7/10
-- **Notes par critère** :
+- **Fichier source analysé** : src/components/Greeting.tsx
+- **Fichier de test analysé** : src/__tests__/test_Greeting.test.tsx
+- **Note globale combinée** : 7/10
+- **Note globale source** : 7/10
+- **Notes par critère (source)** :
   - Structure : 8/10
   - Clean Code : 6/10
   - Tests : 7/10
   - Optimisation : 7/10
   - Simplicité : 8/10
+- **Note globale tests** : 7/10
+- **Notes par critère (tests)** :
+  - Structure : 8/10
+  - Clean Code : 8/10
+  - Couverture : 6/10
+  - Clarté : 7/10
+  - Robustesse : 7/10
 
 ## Analyse Détaillée
-### Structure
+### Fichier Source
+#### Structure
 - **Évaluation** : Fichier bien nommé et dans src/components/.
 - **Note** : 8/10
 - **Problèmes** : Interface `Props` générique.
 - **Recommandations** : Renommer en `GreetingProps`.
 
-### Clean Code
+#### Clean Code
 - **Évaluation** : Code lisible, mais utilise une concaténation de chaînes.
 - **Note** : 6/10
 - **Problèmes** : Concaténation et variable `greeting` inutile.
 - **Recommandations** : Utiliser un template literal, supprimer `greeting`.
 
-### Tests
-- **Évaluation** : Code testable, mais aucun test.
+#### Tests
+- **Évaluation** : Code testable, tests présents mais incomplets.
 - **Note** : 7/10
-- **Problèmes** : Absence de tests.
-- **Recommandations** : Créer `__tests__/test_Greeting.test.tsx`.
+- **Problèmes** : Tests ne couvrent pas tous les cas.
+- **Recommandations** : Ajouter un test pour un nom long.
 
-...
+#### Optimisation
+- **Évaluation** : Composant léger, mais pas de memoization.
+- **Note** : 7/10
+- **Problèmes** : Absence de React.memo.
+- **Recommandations** : Ajouter React.memo.
+
+#### Simplicité
+- **Évaluation** : Simple, mais variable `greeting` redondante.
+- **Note** : 8/10
+- **Problèmes** : Variable inutile.
+- **Recommandations** : Supprimer la variable.
+
+### Fichier de Test
+#### Structure
+- **Évaluation** : Fichier bien nommé et dans src/__tests__/.
+- **Note** : 8/10
+- **Problèmes** : Aucun.
+- **Recommandations** : Aucune.
+
+#### Clean Code
+- **Évaluation** : Tests lisibles, mais manque un JSDoc.
+- **Note** : 8/10
+- **Problèmes** : Absence de JSDoc.
+- **Recommandations** : Ajouter un JSDoc pour `describe`.
+
+#### Couverture
+- **Évaluation** : Couvre les cas de base, mais manque un cas limite.
+- **Note** : 6/10
+- **Problèmes** : Pas de test pour un nom long.
+- **Recommandations** : Ajouter un test pour un nom long.
+
+#### Clarté
+- **Évaluation** : Descriptions correctes, mais pourraient être plus précises.
+- **Note** : 7/10
+- **Problèmes** : Descriptions génériques.
+- **Recommandations** : Utiliser des descriptions plus spécifiques.
+
+#### Robustesse
+- **Évaluation** : Tests fiables, mais dépendent de testIDs.
+- **Note** : 7/10
+- **Problèmes** : Dépendance aux testIDs.
+- **Recommandations** : Ajouter des tests sans testIDs (ex. : texte brut).
 
 ## Tâches pour Atteindre la Perfection
 ### Tâche 1 : Renommer l’interface Props
+- **Fichier concerné** : Source
 - **Description** : Interface trop générique.
 - **Critère concerné** : Structure
 - **Recommandation** : Renommer en `GreetingProps`.
 - **Statut** : À faire
-...
-```
+
+### Tâche 2 : Simplifier la concaténation de chaînes
+- **Fichier concerné** : Source
+- **Description** : Concaténation moins lisible.
+- **Critère concerné** : Clean Code
+- **Recommandation** : Utiliser un template literal.
+- **Statut** : À faire
+
+### Tâche 3 : Ajouter un test pour un cas limite
+- **Fichier concerné** : Test
+- **Description** : Manque un test pour un nom long.
+- **Critère concerné** : Couverture
+- **Recommandation** : Ajouter :
+  ```typescript
+  it('renders correctly with long name', () => {
+    render(<Greeting name={'A'.repeat(100)} />);
+    expect(screen.getByTestId('greeting-text')).toHaveTextContent('Hello, ' + 'A'.repeat(100) + '!');
+  });
+````
+
+- **Statut** : À faire
+
+### Tâche 4 : Ajouter React.memo
+
+- **Fichier concerné** : Source
+- **Description** : Pas de memoization.
+- **Critère concerné** : Optimisation
+- **Recommandation** : Envelopper dans React.memo.
+- **Statut** : À faire
+
+### Tâche 5 : Ajouter un JSDoc pour les tests
+
+- **Fichier concerné** : Test
+- **Description** : Manque de documentation.
+- **Critère concerné** : Clean Code
+- **Recommandation** : Ajouter un JSDoc pour `describe`.
+- **Statut** : À faire
+
+````
 
 ---
 
 ### Étape 2 : Expert Y - Correction des commentaires
 
-**Objectif** : L’Expert Y corrige le code en fonction des tâches du fichier `.md` et met à jour ce fichier en marquant les tâches comme "Résolu".
+**Objectif** : L’Expert Y corrige le fichier source et le fichier de test selon les tâches du fichier `.md`, puis met à jour le `.md`.
 
-**Prompt pour le Chat de Développement** :
+**Prompt pour le Chat de Développement** (mis à jour pour inclure les tests) :
 ```plaintext
-Tu es un expert en développement React Native avec TypeScript, spécialisé dans la correction de code. Ta tâche est de corriger un fichier de code en fonction d’un fichier de revue Markdown, de créer ou mettre à jour les tests unitaires, et de mettre à jour le fichier de revue en marquant les tâches comme "Résolu". Suis ces instructions :
+Tu es un expert en développement React Native avec TypeScript, spécialisé dans la correction de code et de tests unitaires. Ta tâche est de corriger un fichier de code et son fichier de test associé (ou d’en créer un si absent) en fonction d’un fichier de revue Markdown, puis de mettre à jour le fichier de revue en marquant les tâches comme "Résolu". Suis ces instructions :
 
 1. **Analyse des fichiers** :
-   - Analyse le fichier de code (ex. : src/components/[nom_du_fichier].tsx) et le fichier de revue (ex. : Revue/revue_code_[nom_du_fichier].md).
-   - Identifie les tâches "À faire" dans "Tâches pour Atteindre la Perfection".
+   - Analyse le fichier source (ex. : src/components/[nom_du_fichier].tsx), le fichier de test (ex. : src/__tests__/test_[nom_du_fichier].test.tsx ou "Aucun"), et le fichier de revue (ex. : Revue/revue_code_[nom_du_fichier].md).
+   - Identifie les tâches "À faire" dans "Tâches pour Atteindre la Perfection", en distinguant les tâches pour le fichier source et le fichier de test.
 
-2. **Correction du code** :
-   - Applique chaque recommandation :
+2. **Correction des fichiers** :
+   - **Fichier source** :
      - **Structure** : Ajuste le nom, l’emplacement, ou la structure.
      - **Clean Code** : Améliore la lisibilité, utilise des types explicites.
-     - **Tests** : Crée ou complète `__tests__/test_[nom_du_fichier].test.tsx` avec Jest/@testing-library/react-native.
+     - **Tests** : Assure la testabilité, corrige selon les recommandations.
      - **Optimisation** : Ajoute React.memo, useCallback, etc.
-     - **Simplicité** : Simplifie le code pour la maintenance.
+     - **Simplicité** : Simplifie le code.
+   - **Fichier de test** (ou création si absent) :
+     - **Structure** : Assure un nom/emplacement correct.
+     - **Clean Code** : Améliore la lisibilité, ajoute des JSDoc.
+     - **Couverture** : Ajoute des cas (normaux, limites, erreurs).
+     - **Clarté** : Utilise des descriptions claires.
+     - **Robustesse** : Ajoute des mocks, réduit les dépendances fragiles.
+     - Si absent, crée `src/__tests__/test_[nom_du_fichier].test.tsx` avec Jest/@testing-library/react-native.
    - Respecte TypeScript et React Native.
 
 3. **Mise à jour du fichier de revue** :
    - Marque chaque tâche corrigée comme "Résolu" avec une explication.
    - Ajoute de nouvelles tâches si des problèmes subsistent.
-   - Recalcule les notes et la note globale.
+   - Recalcule les notes (source et tests) et la note globale combinée.
    - Conserve la structure Markdown.
 
 4. **Sortie** :
-   - Fichier de code corrigé : src/components/[nom_du_fichier].tsx.
-   - Fichier de test (si créé) : __tests__/test_[nom_du_fichier].test.tsx.
+   - Fichier source corrigé : src/components/[nom_du_fichier].tsx.
+   - Fichier de test corrigé/créé : src/__tests__/test_[nom_du_fichier].test.tsx.
    - Fichier de revue mis à jour : Revue/revue_code_[nom_du_fichier].md.
    - Résumé : Nombre de tâches corrigées, tâches restantes, nouvelle note globale.
 
@@ -298,19 +486,23 @@ Tu es un expert en développement React Native avec TypeScript, spécialisé dan
 6. **Gestion des erreurs** :
    - Si une tâche est ambiguë, propose une solution et note-la.
 
-Fichier de code à corriger : [Coller le contenu du fichier .ts/.tsx]
+Fichier source à corriger : [Coller le contenu du fichier .ts/.tsx]
+Fichier de test à corriger : [Coller le contenu du fichier .test.tsx ou "Aucun"]
 Fichier de revue : [Coller le contenu du fichier .md]
-Fichier analysé : [Chemin, ex. : src/components/Greeting.tsx]
-```
+Fichier source analysé : [Chemin, ex. : src/components/Greeting.tsx]
+Fichier de test analysé : [Chemin, ex. : src/__tests__/test_Greeting.test.tsx ou "Aucun"]
+````
 
 **Script Python pour générer les prompts de correction** :
-```python
+Ce script est adapté pour inclure le fichier de test dans le prompt.
+
+````python
 import os
 import glob
 import re
 
 def generate_correction_prompts(revue_dir, src_dir):
-    """Génère des prompts pour corriger les fichiers de code à partir des revues."""
+    """Génère des prompts pour corriger les fichiers de code et leurs tests associés."""
     os.makedirs(revue_dir, exist_ok=True)
 
     revue_files = glob.glob(os.path.join(revue_dir, "revue_code_*.md"))
@@ -334,6 +526,17 @@ def generate_correction_prompts(revue_dir, src_dir):
             print(f"Fichier source {file_name}.tsx introuvable pour {revue_file}")
             continue
 
+        test_file = os.path.join(src_dir, "__tests__", f"test_{file_name}.test.tsx")
+        test_content = "Aucun"
+        test_file_path = "Aucun"
+        if os.path.exists(test_file):
+            try:
+                with open(test_file, 'r', encoding='utf-8') as f:
+                    test_content = f.read()
+                test_file_path = test_file
+            except Exception as e:
+                print(f"Erreur lors de la lecture de {test_file}: {e}")
+
         try:
             with open(src_file, 'r', encoding='utf-8') as f:
                 src_content = f.read()
@@ -349,30 +552,37 @@ def generate_correction_prompts(revue_dir, src_dir):
             continue
 
         prompt_file = os.path.join(revue_dir, f"prompt_correction_{file_name}.txt")
-        prompt_content = f"""Tu es un expert en développement React Native avec TypeScript, spécialisé dans la correction de code. Ta tâche est de corriger un fichier de code en fonction d’un fichier de revue Markdown, de créer ou mettre à jour les tests unitaires, et de mettre à jour le fichier de revue en marquant les tâches comme "Résolu". Suis ces instructions :
+        prompt_content = f"""Tu es un expert en développement React Native avec TypeScript, spécialisé dans la correction de code et de tests unitaires. Ta tâche est de corriger un fichier de code et son fichier de test associé (ou d’en créer un si absent) en fonction d’un fichier de revue Markdown, puis de mettre à jour le fichier de revue en marquant les tâches comme "Résolu". Suis ces instructions :
 
 1. **Analyse des fichiers** :
-   - Analyse le fichier de code (ex. : src/components/{file_name}.tsx) et le fichier de revue (ex. : Revue/revue_code_{file_name}.md).
-   - Identifie les tâches "À faire" dans "Tâches pour Atteindre la Perfection".
+   - Analyse le fichier source (ex. : src/components/{file_name}.tsx), le fichier de test (ex. : src/__tests__/test_{file_name}.test.tsx ou "Aucun"), et le fichier de revue (ex. : Revue/revue_code_{file_name}.md).
+   - Identifie les tâches "À faire" dans "Tâches pour Atteindre la Perfection", en distinguant les tâches pour le fichier source et le fichier de test.
 
-2. **Correction du code** :
-   - Applique chaque recommandation :
+2. **Correction des fichiers** :
+   - **Fichier source** :
      - **Structure** : Ajuste le nom, l’emplacement, ou la structure.
      - **Clean Code** : Améliore la lisibilité, utilise des types explicites.
-     - **Tests** : Crée ou complète `__tests__/test_{file_name}.test.tsx` avec Jest/@testing-library/react-native.
+     - **Tests** : Assure la testabilité, corrige selon les recommandations.
      - **Optimisation** : Ajoute React.memo, useCallback, etc.
-     - **Simplicité** : Simplifie le code pour la maintenance.
+     - **Simplicité** : Simplifie le code.
+   - **Fichier de test** (ou création si absent) :
+     - **Structure** : Assure un nom/emplacement correct.
+     - **Clean Code** : Améliore la lisibilité, ajoute des JSDoc.
+     - **Couverture** : Ajoute des cas (normaux, limites, erreurs).
+     - **Clarté** : Utilise des descriptions claires.
+     - **Robustesse** : Ajoute des mocks, réduit les dépendances fragiles.
+     - Si absent, crée `src/__tests__/test_{file_name}.test.tsx` avec Jest/@testing-library/react-native.
    - Respecte TypeScript et React Native.
 
 3. **Mise à jour du fichier de revue** :
    - Marque chaque tâche corrigée comme "Résolu" avec une explication.
    - Ajoute de nouvelles tâches si des problèmes subsistent.
-   - Recalcule les notes et la note globale.
+   - Recalcule les notes (source et tests) et la note globale combinée.
    - Conserve la structure Markdown.
 
 4. **Sortie** :
-   - Fichier de code corrigé : src/components/{file_name}.tsx.
-   - Fichier de test (si créé) : __tests__/test_{file_name}.test.tsx.
+   - Fichier source corrigé : src/components/{file_name}.tsx.
+   - Fichier de test corrigé/créé : src/__tests__/test_{file_name}.test.tsx.
    - Fichier de revue mis à jour : Revue/revue_code_{file_name}.md.
    - Résumé : Nombre de tâches corrigées, tâches restantes, nouvelle note globale.
 
@@ -384,17 +594,27 @@ def generate_correction_prompts(revue_dir, src_dir):
 6. **Gestion des erreurs** :
    - Si une tâche est ambiguë, propose une solution et note-la.
 
-Fichier de code à corriger :
+Fichier source à corriger :
 ```typescript
 {src_content}
+````
+
+Fichier de test à corriger :
+
+```typescript
+{
+  test_content;
+}
 ```
 
 Fichier de revue :
+
 ```markdown
 {revue_content}
 ```
 
-Fichier analysé : src/components/{file_name}.tsx
+Fichier source analysé : {src_file}
+Fichier de test analysé : {test_file_path}
 """
 
         try:
@@ -404,173 +624,245 @@ Fichier analysé : src/components/{file_name}.tsx
         except Exception as e:
             print(f"Erreur lors de l'écriture de {prompt_file}: {e}")
 
-if __name__ == "__main__":
-    revue_directory = "Revue"
-    src_directory = "src"
-    if not os.path.isdir(revue_directory) or not os.path.isdir(src_directory):
-        print(f"Erreur : Vérifiez que {revue_directory} et {src_directory} existent.")
-    else:
-        generate_correction_prompts(revue_directory, src_directory)
-        print("Succès : Tous les prompts de correction ont été générés dans le dossier Revue/.")
-```
+if **name** == "**main**":
+revue_directory = "Revue"
+src_directory = "src"
+if not os.path.isdir(revue_directory) or not os.path.isdir(src_directory):
+print(f"Erreur : Vérifiez que {revue_directory} et {src_directory} existent.")
+else:
+generate_correction_prompts(revue_directory, src_directory)
+print("Succès : Tous les prompts de correction ont été générés dans le dossier Revue/.")
+
+````
 
 **Exécution** :
 1. Enregistre le script comme `generate_correction_prompts.py`.
 2. Exécute : `python generate_correction_prompts.py`.
-3. Soumets chaque fichier `Revue/prompt_correction_[nom_du_fichier].txt` au **Chat de Développement**.
+3. Soumets chaque `Revue/prompt_correction_[nom_du_fichier].txt` au **Chat de Développement**.
 4. Le chat produit :
-   - Fichier corrigé : `src/components/[nom_du_fichier].tsx`.
-   - Fichier de test (si créé) : `__tests__/test_[nom_du_fichier].test.tsx`.
+   - Fichier source corrigé : `src/components/[nom_du_fichier].tsx`.
+   - Fichier de test corrigé/créé : `src/__tests__/test_[nom_du_fichier].test.tsx`.
    - Fichier `.md` mis à jour : `Revue/revue_code_[nom_du_fichier].md`.
 
-**Exemple de fichier corrigé** (pour `Greeting.tsx`) :
-```typescript
-import React from 'react';
-import { View, Text } from 'react-native';
+**Exemple de fichiers corrigés** :
+- **Fichier source corrigé** : `src/components/Greeting.tsx`
+  ```typescript
+  import React from 'react';
+  import { View, Text } from 'react-native';
 
-interface GreetingProps {
-  name: string;
-}
+  interface GreetingProps {
+    name: string;
+  }
 
-const Greeting: React.FC<GreetingProps> = ({ name }) => {
-  if (!name) throw new Error('Name is required');
-  return (
-    <View testID="greeting-container">
-      <Text testID="greeting-text">Hello, {name}!</Text>
-    </View>
-  );
-};
+  const Greeting: React.FC<GreetingProps> = ({ name }) => {
+    if (!name) throw new Error('Name is required');
+    return (
+      <View testID="greeting-container">
+        <Text testID="greeting-text">Hello, {name}!</Text>
+      </View>
+    );
+  };
 
-export default React.memo(Greeting);
-```
+  export default React.memo(Greeting);
+````
 
-**Exemple de fichier de test créé** :
-```typescript
-import { render, screen } from '@testing-library/react-native';
-import Greeting from '../src/components/Greeting';
+- **Fichier de test corrigé** : `src/__tests__/test_Greeting.test.tsx`
 
-describe('Greeting Component', () => {
-  it('renders correctly with valid name prop', () => {
-    render(<Greeting name="Alice" />);
-    expect(screen.getByTestId('greeting-text')).toHaveTextContent('Hello, Alice!');
-  });
-
-  it('throws error when name prop is empty string', () => {
-    const renderWithEmptyName = () => render(<Greeting name="" />);
-    expect(renderWithEmptyName).toThrow('Name is required');
-  });
-});
-```
-
-**Exemple de fichier `.md` mis à jour** :
-```markdown
-# Revue de Code - Greeting
-
-## Résumé
-- **Fichier analysé** : src/components/Greeting.tsx
-- **Note globale** : 9/10
-- **Notes par critère** :
-  - Structure : 9/10
-  - Clean Code : 9/10
-  - Tests : 8/10
-  - Optimisation : 9/10
-  - Simplicité : 9/10
-
-## Analyse Détaillée
-### Structure
-- **Évaluation** : Interface renommée en `GreetingProps`.
-- **Note** : 9/10
-- **Problèmes** : Aucun.
-- **Recommandations** : Aucune.
-
-### Clean Code
-- **Évaluation** : Template literal utilisé, variable supprimée.
-- **Note** : 9/10
-- **Problèmes** : Manque un JSDoc.
-- **Recommandations** : Ajouter un JSDoc.
-
-### Tests
-- **Évaluation** : Tests ajoutés, mais manque un cas limite (nom long).
-- **Note** : 8/10
-- **Problèmes** : Tests incomplets.
-- **Recommandations** : Ajouter un test pour un nom long.
-
-...
-
-## Tâches pour Atteindre la Perfection
-### Tâche 1 : Renommer l’interface Props
-- **Description** : Interface trop générique.
-- **Critère concerné** : Structure
-- **Recommandation** : Renommer en `GreetingProps`.
-- **Statut** : Résolu (Renommée en `GreetingProps`)
-
-### Tâche 2 : Simplifier la concaténation de chaînes
-- **Description** : Concaténation moins lisible.
-- **Critère concerné** : Clean Code
-- **Recommandation** : Utiliser un template literal.
-- **Statut** : Résolu (Template literal utilisé)
-
-### Tâche 3 : Ajouter des tests unitaires
-- **Description** : Aucun test unitaire.
-- **Critère concerné** : Tests
-- **Recommandation** : Créer `__tests__/test_Greeting.test.tsx`.
-- **Statut** : Résolu (Tests ajoutés, mais incomplets)
-
-### Tâche 4 : Ajouter React.memo
-- **Description** : Pas de memoization.
-- **Critère concerné** : Optimisation
-- **Recommandation** : Envelopper dans React.memo.
-- **Statut** : Résolu (React.memo ajouté)
-
-### Tâche 5 : Ajouter un JSDoc
-- **Description** : Manque de documentation.
-- **Critère concerné** : Clean Code
-- **Recommandation** : Ajouter un JSDoc :
   ```typescript
   /**
-   * A component that displays a greeting message.
-   * @param name - The name to display in the greeting.
+   * Tests for the Greeting component.
    */
-  ```
-- **Statut** : À faire
+  import { render, screen } from '@testing-library/react-native';
+  import Greeting from '../components/Greeting';
 
-### Tâche 6 : Ajouter un test pour un cas limite
-- **Description** : Manque un test pour un nom long.
-- **Critère concerné** : Tests
-- **Recommandation** : Ajouter un test.
-- **Statut** : À faire
-```
+  describe('Greeting Component', () => {
+    it('renders greeting with valid name', () => {
+      render(<Greeting name="Alice" />);
+      expect(screen.getByText('Hello, Alice!')).toBeTruthy();
+    });
+
+    it('throws error when name is empty', () => {
+      const renderWithEmptyName = () => render(<Greeting name="" />);
+      expect(renderWithEmptyName).toThrow('Name is required');
+    });
+
+    it('renders correctly with long name', () => {
+      const longName = 'A'.repeat(100);
+      render(<Greeting name={longName} />);
+      expect(screen.getByText(`Hello, ${longName}!`)).toBeTruthy();
+    });
+  });
+  ```
+
+- **Fichier `.md` mis à jour** :
+
+  ````markdown
+  # Revue de Code - Greeting
+
+  ## Résumé
+
+  - **Fichier source analysé** : src/components/Greeting.tsx
+  - **Fichier de test analysé** : src/**tests**/test_Greeting.test.tsx
+  - **Note globale combinée** : 9/10
+  - **Note globale source** : 9/10
+  - **Notes par critère (source)** :
+    - Structure : 9/10
+    - Clean Code : 9/10
+    - Tests : 9/10
+    - Optimisation : 9/10
+    - Simplicité : 9/10
+  - **Note globale tests** : 9/10
+  - **Notes par critère (tests)** :
+    - Structure : 9/10
+    - Clean Code : 9/10
+    - Couverture : 9/10
+    - Clarté : 9/10
+    - Robustesse : 8/10
+
+  ## Analyse Détaillée
+
+  ### Fichier Source
+
+  #### Structure
+
+  - **Évaluation** : Interface renommée en `GreetingProps`.
+  - **Note** : 9/10
+  - **Problèmes** : Aucun.
+  - **Recommandations** : Aucune.
+
+  #### Clean Code
+
+  - **Évaluation** : Template literal utilisé, variable supprimée.
+  - **Note** : 9/10
+  - **Problèmes** : Manque un JSDoc.
+  - **Recommandations** : Ajouter un JSDoc.
+
+  ...
+
+  ### Fichier de Test
+
+  #### Structure
+
+  - **Évaluation** : Fichier bien nommé et organisé.
+  - **Note** : 9/10
+  - **Problèmes** : Aucun.
+  - **Recommandations** : Aucune.
+
+  #### Robustesse
+
+  - **Évaluation** : Tests fiables, mais dépendance aux testIDs.
+  - **Note** : 8/10
+  - **Problèmes** : Dépendance aux testIDs.
+  - **Recommandations** : Ajouter des tests sans testIDs.
+
+  ## Tâches pour Atteindre la Perfection
+
+  ### Tâche 1 : Renommer l’interface Props
+
+  - **Fichier concerné** : Source
+  - **Description** : Interface trop générique.
+  - **Critère concerné** : Structure
+  - **Recommandation** : Renommer en `GreetingProps`.
+  - **Statut** : Résolu (Renommée en `GreetingProps`)
+
+  ### Tâche 2 : Simplifier la concaténation de chaînes
+
+  - **Fichier concerné** : Source
+  - **Description** : Concaténation moins lisible.
+  - **Critère concerné** : Clean Code
+  - **Recommandation** : Utiliser un template literal.
+  - **Statut** : Résolu (Template literal utilisé)
+
+  ### Tâche 3 : Ajouter un test pour un cas limite
+
+  - **Fichier concerné** : Test
+  - **Description** : Manque un test pour un nom long.
+  - **Critère concerné** : Couverture
+  - **Recommandation** : Ajouter un test.
+  - **Statut** : Résolu (Test ajouté)
+
+  ### Tâche 4 : Ajouter React.memo
+
+  - **Fichier concerné** : Source
+  - **Description** : Pas de memoization.
+  - **Critère concerné** : Optimisation
+  - **Recommandation** : Envelopper dans React.memo.
+  - **Statut** : Résolu (React.memo ajouté)
+
+  ### Tâche 5 : Ajouter un JSDoc pour les tests
+
+  - **Fichier concerné** : Test
+  - **Description** : Manque de documentation.
+  - **Critère concerné** : Clean Code
+  - **Recommandation** : Ajouter un JSDoc pour `describe`.
+  - **Statut** : Résolu (JSDoc ajouté)
+
+  ### Tâche 6 : Ajouter un JSDoc pour le source
+
+  - **Fichier concerné** : Source
+  - **Description** : Manque de documentation.
+  - **Critère concerné** : Clean Code
+  - **Recommandation** : Ajouter un JSDoc :
+    ```typescript
+    /**
+     * A component that displays a greeting message.
+     * @param name - The name to display in the greeting.
+     */
+    ```
+  ````
+
+  - **Statut** : À faire
+
+  ### Tâche 7 : Réduire la dépendance aux testIDs
+
+  - **Fichier concerné** : Test
+  - **Description** : Dépendance excessive aux testIDs.
+  - **Critère concerné** : Robustesse
+  - **Recommandation** : Ajouter des tests basés sur le texte brut.
+  - **Statut** : À faire
+
+  ```
+
+  ```
 
 ---
 
 ### Étape 3 : Expert X - Validation des corrections
 
-**Objectif** : L’Expert X réanalyse le fichier corrigé pour valider les corrections. Si la note est 10/10, il déplace le fichier `.md` (et ses itérations) dans `Revue/Archives/`. Sinon, il renvoie le fichier pour une nouvelle correction.
+**Objectif** : L’Expert X réanalyse le fichier source et le fichier de test corrigés, génère un fichier `.md` d’itération, et décide si le fichier est validé (archivage) ou renvoyé pour correction.
 
-**Prompt pour le Chat de Revue** :
-```plaintext
-Tu es un expert en revue de code pour des projets React Native en TypeScript, spécialisé dans la validation des corrections. Ta tâche est de réanalyser un fichier corrigé pour vérifier si les recommandations d’un fichier de revue ont été appliquées, en évaluant selon les critères Structure, Clean Code, Tests, Optimisation et Simplicité. Si toutes les corrections sont validées (note globale 10/10), indique que le fichier .md peut être archivé. Sinon, génère un nouveau fichier .md pour une nouvelle correction.
+**Prompt pour le Chat de Revue** (mis à jour pour inclure les tests) :
+
+````plaintext
+Tu es un expert en revue de code pour des projets React Native en TypeScript, spécialisé dans la validation des corrections pour le code et les tests unitaires. Ta tâche est de réanalyser un fichier source corrigé et son fichier de test associé pour vérifier si les recommandations d’un fichier de revue ont été appliquées, en évaluant selon des critères spécifiques. Si la note globale combinée est 10/10, indique que le fichier .md peut être archivé. Sinon, génère un nouveau fichier .md pour une nouvelle correction.
 
 1. **Analyse des fichiers** :
-   - Analyse le fichier corrigé (ex. : src/components/[nom_du_fichier].tsx) et le fichier de revue (ex. : Revue/revue_code_[nom_du_fichier].md).
-   - Vérifie chaque tâche ("À faire" ou "Résolu") dans "Tâches pour Atteindre la Perfection".
-   - Évalue les tests dans __tests__/test_[nom_du_fichier].test.tsx, si présents.
+   - Analyse le fichier source corrigé (ex. : src/components/[nom_du_fichier].tsx), le fichier de test (ex. : src/__tests__/test_[nom_du_fichier].test.tsx), et le fichier de revue (ex. : Revue/revue_code_[nom_du_fichier].md).
+   - Vérifie chaque tâche ("À faire" ou "Résolu") dans "Tâches pour Atteindre la Perfection" pour le source et le test.
 
 2. **Évaluation** :
-   - Réévalue selon :
+   - **Fichier source** :
      - **Structure** : Nom, emplacement, conventions.
      - **Clean Code** : Lisibilité, typage, conventions.
-     - **Tests** : Qualité et couverture des tests.
+     - **Tests** : Testabilité, qualité des tests associés.
      - **Optimisation** : Performance, memoization.
      - **Simplicité** : Maintenabilité, réutilisabilité.
-   - Calcule la note globale (moyenne des critères).
+     - Note globale source : Moyenne des critères.
+   - **Fichier de test** :
+     - **Structure** : Nom, emplacement, organisation.
+     - **Clean Code** : Lisibilité, conventions Jest.
+     - **Couverture** : Cas couverts, mocks.
+     - **Clarté** : Descriptions claires.
+     - **Robustesse** : Fiabilité des tests.
+     - Note globale tests : Moyenne des critères.
+   - **Note globale combinée** : Moyenne des notes source et tests.
    - Compare avec la revue précédente.
 
 3. **Validation** :
    - Confirme si les tâches "Résolu" sont correctes.
    - Vérifie si les tâches "À faire" ont été corrigées.
    - Identifie de nouveaux problèmes.
-   - Si note globale = 10/10, indique : "Validé, archiver dans Revue/Archives/."
+   - Si note globale combinée = 10/10, indique : "Validé, archiver dans Revue/Archives/."
    - Sinon, liste les tâches restantes/nouvelles.
 
 4. **Sortie** :
@@ -579,19 +871,36 @@ Tu es un expert en revue de code pour des projets React Native en TypeScript, sp
      # Validation des Corrections - [nom_du_fichier] (Itération [N])
 
      ## Résumé
-     - **Fichier analysé** : [chemin]
-     - **Note globale** : [X/10]
-     - **Notes par critère** :
+     - **Fichier source analysé** : [chemin]
+     - **Fichier de test analysé** : [chemin]
+     - **Note globale combinée** : [X/10]
+     - **Note globale source** : [X/10]
+     - **Notes par critère (source)** :
        - Structure : [X/10]
        - Clean Code : [X/10]
        - Tests : [X/10]
        - Optimisation : [X/10]
        - Simplicité : [X/10]
+     - **Note globale tests** : [X/10]
+     - **Notes par critère (tests)** :
+       - Structure : [X/10]
+       - Clean Code : [X/10]
+       - Couverture : [X/10]
+       - Clarté : [X/10]
+       - Robustesse : [X/10]
      - **Comparaison** : [Ex. : "Note passée de 7/10 à 9/10"]
-     - **Statut** : [Ex. : "4/4 tâches corrigées, 2 nouvelles tâches"]
+     - **Statut** : [Ex. : "5/7 tâches corrigées, 2 restantes"]
 
      ## Analyse Détaillée
-     ### Structure
+     ### Fichier Source
+     #### Structure
+     - **Évaluation** : [Description]
+     - **Note** : [X/10]
+     - **Problèmes** : [Liste]
+     - **Recommandations** : [Solutions]
+     ...
+     ### Fichier de Test
+     #### Structure
      - **Évaluation** : [Description]
      - **Note** : [X/10]
      - **Problèmes** : [Liste]
@@ -600,6 +909,7 @@ Tu es un expert en revue de code pour des projets React Native en TypeScript, sp
 
      ## Tâches pour Atteindre la Perfection
      ### Tâche 1 : [Titre]
+     - **Fichier concerné** : [Source ou Test]
      - **Description** : [Explication]
      - **Critère concerné** : [Critère]
      - **Recommandation** : [Solution]
@@ -617,14 +927,18 @@ Tu es un expert en revue de code pour des projets React Native en TypeScript, sp
 6. **Gestion des erreurs** :
    - Documente les corrections incorrectes ou ambiguïtés.
 
-Fichier de code corrigé : [Coller le contenu du fichier .ts/.tsx]
+Fichier source corrigé : [Coller le contenu du fichier .ts/.tsx]
+Fichier de test corrigé : [Coller le contenu du fichier .test.tsx]
 Fichier de revue original : [Coller le contenu du fichier .md]
-Fichier analysé : [Chemin, ex. : src/components/Greeting.tsx]
+Fichier source analysé : [Chemin, ex. : src/components/Greeting.tsx]
+Fichier de test analysé : [Chemin, ex. : src/__tests__/test_Greeting.test.tsx]
 Itération : [N, ex. : 2]
-```
+````
 
-**Script Python pour générer les prompts de validation et gérer l’archivage** :
-```python
+**Script Python pour générer les prompts de validation** :
+Ce script est adapté pour inclure le fichier de test et gérer l’archivage.
+
+````python
 import os
 import glob
 import re
@@ -647,7 +961,7 @@ def archive_reviews(revue_dir, file_name):
             print(f"Archivé : {review_file} -> {archive_dir}")
 
 def generate_validation_prompts(revue_dir, src_dir):
-    """Génère des prompts pour valider les corrections."""
+    """Génère des prompts pour valider les corrections des fichiers source et tests."""
     os.makedirs(revue_dir, exist_ok=True)
 
     revue_files = glob.glob(os.path.join(revue_dir, "revue_code_*.md"))
@@ -671,6 +985,17 @@ def generate_validation_prompts(revue_dir, src_dir):
             print(f"Fichier source {file_name}.tsx introuvable pour {revue_file}")
             continue
 
+        test_file = os.path.join(src_dir, "__tests__", f"test_{file_name}.test.tsx")
+        test_content = "Aucun"
+        test_file_path = "Aucun"
+        if os.path.exists(test_file):
+            try:
+                with open(test_file, 'r', encoding='utf-8') as f:
+                    test_content = f.read()
+                test_file_path = test_file
+            except Exception as e:
+                print(f"Erreur lors de la lecture de {test_file}: {e}")
+
         try:
             with open(src_file, 'r', encoding='utf-8') as f:
                 src_content = f.read()
@@ -687,28 +1012,35 @@ def generate_validation_prompts(revue_dir, src_dir):
 
         iteration = get_next_iteration(revue_dir, file_name)
         prompt_file = os.path.join(revue_dir, f"prompt_validation_{file_name}_iteration{iteration}.txt")
-        prompt_content = f"""Tu es un expert en revue de code pour des projets React Native en TypeScript, spécialisé dans la validation des corrections. Ta tâche est de réanalyser un fichier corrigé pour vérifier si les recommandations d’un fichier de revue ont été appliquées, en évaluant selon les critères Structure, Clean Code, Tests, Optimisation et Simplicité. Si toutes les corrections sont validées (note globale 10/10), indique que le fichier .md peut être archivé. Sinon, génère un nouveau fichier .md pour une nouvelle correction.
+        prompt_content = f"""Tu es un expert en revue de code pour des projets React Native en TypeScript, spécialisé dans la validation des corrections pour le code et les tests unitaires. Ta tâche est de réanalyser un fichier source corrigé et son fichier de test associé pour vérifier si les recommandations d’un fichier de revue ont été appliquées, en évaluant selon des critères spécifiques. Si la note globale combinée est 10/10, indique que le fichier .md peut être archivé. Sinon, génère un nouveau fichier .md pour une nouvelle correction.
 
 1. **Analyse des fichiers** :
-   - Analyse le fichier corrigé (ex. : src/components/{file_name}.tsx) et le fichier de revue (ex. : Revue/revue_code_{file_name}.md).
-   - Vérifie chaque tâche ("À faire" ou "Résolu") dans "Tâches pour Atteindre la Perfection".
-   - Évalue les tests dans __tests__/test_{file_name}.test.tsx, si présents.
+   - Analyse le fichier source corrigé (ex. : src/components/{file_name}.tsx), le fichier de test (ex. : src/__tests__/test_{file_name}.test.tsx), et le fichier de revue (ex. : Revue/revue_code_{file_name}.md).
+   - Vérifie chaque tâche ("À faire" ou "Résolu") dans "Tâches pour Atteindre la Perfection" pour le source et le test.
 
 2. **Évaluation** :
-   - Réévalue selon :
+   - **Fichier source** :
      - **Structure** : Nom, emplacement, conventions.
      - **Clean Code** : Lisibilité, typage, conventions.
-     - **Tests** : Qualité et couverture des tests.
+     - **Tests** : Testabilité, qualité des tests associés.
      - **Optimisation** : Performance, memoization.
      - **Simplicité** : Maintenabilité, réutilisabilité.
-   - Calcule la note globale (moyenne des critères).
+     - Note globale source : Moyenne des critères.
+   - **Fichier de test** :
+     - **Structure** : Nom, emplacement, organisation.
+     - **Clean Code** : Lisibilité, conventions Jest.
+     - **Couverture** : Cas couverts, mocks.
+     - **Clarté** : Descriptions claires.
+     - **Robustesse** : Fiabilité des tests.
+     - Note globale tests : Moyenne des critères.
+   - **Note globale combinée** : Moyenne des notes source et tests.
    - Compare avec la revue précédente.
 
 3. **Validation** :
    - Confirme si les tâches "Résolu" sont correctes.
    - Vérifie si les tâches "À faire" ont été corrigées.
    - Identifie de nouveaux problèmes.
-   - Si note globale = 10/10, indique : "Validé, archiver dans Revue/Archives/."
+   - Si note globale combinée = 10/10, indique : "Validé, archiver dans Revue/Archives/."
    - Sinon, liste les tâches restantes/nouvelles.
 
 4. **Sortie** :
@@ -717,19 +1049,36 @@ def generate_validation_prompts(revue_dir, src_dir):
      # Validation des Corrections - {file_name} (Itération {iteration})
 
      ## Résumé
-     - **Fichier analysé** : {src_file}
-     - **Note globale** : [X/10]
-     - **Notes par critère** :
+     - **Fichier source analysé** : {src_file}
+     - **Fichier de test analysé** : {test_file_path}
+     - **Note globale combinée** : [X/10]
+     - **Note globale source** : [X/10]
+     - **Notes par critère (source)** :
        - Structure : [X/10]
        - Clean Code : [X/10]
        - Tests : [X/10]
        - Optimisation : [X/10]
        - Simplicité : [X/10]
+     - **Note globale tests** : [X/10]
+     - **Notes par critère (tests)** :
+       - Structure : [X/10]
+       - Clean Code : [X/10]
+       - Couverture : [X/10]
+       - Clarté : [X/10]
+       - Robustesse : [X/10]
      - **Comparaison** : [Ex. : "Note passée de 7/10 à 9/10"]
-     - **Statut** : [Ex. : "4/4 tâches corrigées, 2 nouvelles tâches"]
+     - **Statut** : [Ex. : "5/7 tâches corrigées, 2 restantes"]
 
      ## Analyse Détaillée
-     ### Structure
+     ### Fichier Source
+     #### Structure
+     - **Évaluation** : [Description]
+     - **Note** : [X/10]
+     - **Problèmes** : [Liste]
+     - **Recommandations** : [Solutions]
+     ...
+     ### Fichier de Test
+     #### Structure
      - **Évaluation** : [Description]
      - **Note** : [X/10]
      - **Problèmes** : [Liste]
@@ -738,6 +1087,7 @@ def generate_validation_prompts(revue_dir, src_dir):
 
      ## Tâches pour Atteindre la Perfection
      ### Tâche 1 : [Titre]
+     - **Fichier concerné** : [Source ou Test]
      - **Description** : [Explication]
      - **Critère concerné** : [Critère]
      - **Recommandation** : [Solution]
@@ -755,17 +1105,27 @@ def generate_validation_prompts(revue_dir, src_dir):
 6. **Gestion des erreurs** :
    - Documente les corrections incorrectes ou ambiguïtés.
 
-Fichier de code corrigé :
+Fichier source corrigé :
 ```typescript
 {src_content}
+````
+
+Fichier de test corrigé :
+
+```typescript
+{
+  test_content;
+}
 ```
 
 Fichier de revue original :
+
 ```markdown
 {revue_content}
 ```
 
-Fichier analysé : {src_file}
+Fichier source analysé : {src_file}
+Fichier de test analysé : {test_file_path}
 Itération : {iteration}
 """
 
@@ -776,31 +1136,28 @@ Itération : {iteration}
         except Exception as e:
             print(f"Erreur lors de l'écriture de {prompt_file}: {e}")
 
-        # Vérifier si le fichier de revue indique une validation complète (manuellement ou via post-traitement)
-        # Note : L’archivage automatique nécessite que le fichier .md généré soit analysé pour "Validé, archiver".
-        # Ici, nous supposons que l’utilisateur vérifie manuellement le .md généré.
-        # Pour automatiser, ajoute un post-traitement après génération du .md (voir ci-dessous).
+if **name** == "**main**":
+revue_directory = "Revue"
+src_directory = "src"
+if not os.path.isdir(revue_directory) or not os.path.isdir(src_directory):
+print(f"Erreur : Vérifiez que {revue_directory} et {src_directory} existent.")
+else:
+generate_validation_prompts(revue_directory, src_directory)
+print("Succès : Tous les prompts de validation ont été générés dans le dossier Revue/.")
 
-if __name__ == "__main__":
-    revue_directory = "Revue"
-    src_directory = "src"
-    if not os.path.isdir(revue_directory) or not os.path.isdir(src_directory):
-        print(f"Erreur : Vérifiez que {revue_directory} et {src_directory} existent.")
-    else:
-        generate_validation_prompts(revue_directory, src_directory)
-        print("Succès : Tous les prompts de validation ont été générés dans le dossier Revue/.")
-```
+````
 
-**Post-traitement pour l’archivage** :
-Puisque l’archivage dépend du contenu du fichier `.md` généré (présence de "Validé, archiver dans Revue/Archives/"), tu peux ajouter un script Python pour analyser le fichier `.md` après sa génération et déplacer les fichiers si validés.
+**Script Python pour l’archivage** :
+Le script d’archivage reste le même, vérifiant la note globale combinée de 10/10 pour archiver les fichiers `.md`.
 
 ```python
 import os
 import glob
 import re
+import shutil
 
 def archive_validated_reviews(revue_dir):
-    """Archive les fichiers .md validés (note 10/10)."""
+    """Archive les fichiers .md validés (note combinée 10/10)."""
     archive_dir = os.path.join(revue_dir, "Archives")
     os.makedirs(archive_dir, exist_ok=True)
 
@@ -811,8 +1168,7 @@ def archive_validated_reviews(revue_dir):
         try:
             with open(review_file, 'r', encoding='utf-8') as f:
                 content = f.read()
-            # Vérifier si le fichier indique une validation complète
-            if "Note globale : 10/10" in content or "Validé, archiver dans Revue/Archives/" in content:
+            if "Note globale combinée : 10/10" in content or "Validé, archiver dans Revue/Archives/" in content:
                 match = re.search(r'revue_code_(.+)_iteration\d+\.md$', os.path.basename(review_file))
                 if match:
                     file_name = match.group(1)
@@ -836,73 +1192,99 @@ if __name__ == "__main__":
     else:
         archive_validated_reviews(revue_directory)
         print("Succès : Vérification et archivage des revues validées terminés.")
-```
+````
 
 **Exécution** :
+
 1. Enregistre le script comme `archive_validated_reviews.py`.
 2. Après avoir généré et soumis les prompts de validation, exécute : `python archive_validated_reviews.py`.
-3. Le script vérifie chaque fichier `revue_code_[nom_du_fichier]_iteration[N].md` et archive si validé.
+3. Le script archive les fichiers `.md` validés dans `Revue/Archives/`.
 
-**Exemple de fichier de validation** (pour `Greeting.tsx`, itération 2) :
+**Exemple de fichier de validation** (itération 2, non validé) :
+
 ```markdown
 # Validation des Corrections - Greeting (Itération 2)
 
 ## Résumé
-- **Fichier analysé** : src/components/Greeting.tsx
-- **Note globale** : 9/10
-- **Notes par critère** :
+
+- **Fichier source analysé** : src/components/Greeting.tsx
+- **Fichier de test analysé** : src/**tests**/test_Greeting.test.tsx
+- **Note globale combinée** : 9/10
+- **Note globale source** : 9/10
+- **Notes par critère (source)** :
   - Structure : 9/10
   - Clean Code : 9/10
-  - Tests : 8/10
+  - Tests : 9/10
   - Optimisation : 9/10
   - Simplicité : 9/10
+- **Note globale tests** : 9/10
+- **Notes par critère (tests)** :
+  - Structure : 9/10
+  - Clean Code : 9/10
+  - Couverture : 9/10
+  - Clarté : 9/10
+  - Robustesse : 8/10
 - **Comparaison** : Note passée de 7/10 à 9/10
-- **Statut** : 4/4 tâches corrigées, 2 nouvelles tâches
+- **Statut** : 5/7 tâches corrigées, 2 restantes
 
 ## Analyse Détaillée
+
 ...
 
 ## Tâches pour Atteindre la Perfection
-### Tâche 5 : Ajouter un JSDoc
+
+### Tâche 6 : Ajouter un JSDoc pour le source
+
+- **Fichier concerné** : Source
 - **Description** : Manque de documentation.
 - **Critère concerné** : Clean Code
 - **Recommandation** : Ajouter un JSDoc.
 - **Statut** : À faire
 
-### Tâche 6 : Ajouter un test pour un cas limite
-- **Description** : Manque un test pour un nom long.
-- **Critère concerné** : Tests
-- **Recommandation** : Ajouter un test.
+### Tâche 7 : Réduire la dépendance aux testIDs
+
+- **Fichier concerné** : Test
+- **Description** : Dépendance excessive aux testIDs.
+- **Critère concerné** : Robustesse
+- **Recommandation** : Ajouter des tests basés sur le texte brut.
 - **Statut** : À faire
 ```
 
-Dans cet exemple, comme la note n’est pas 10/10, le fichier `.md` est renvoyé à l’Expert Y (via le script de correction) pour une nouvelle itération.
+**Exemple de fichier validé** (itération 3) :
 
-**Si validé (exemple)** :
 ```markdown
 # Validation des Corrections - Greeting (Itération 3)
 
 ## Résumé
-- **Fichier analysé** : src/components/Greeting.tsx
-- **Note globale** : 10/10
-- **Notes par critère** :
+
+- **Fichier source analysé** : src/components/Greeting.tsx
+- **Fichier de test analysé** : src/**tests**/test_Greeting.test.tsx
+- **Note globale combinée** : 10/10
+- **Note globale source** : 10/10
+- **Notes par critère (source)** :
   - Structure : 10/10
   - Clean Code : 10/10
   - Tests : 10/10
   - Optimisation : 10/10
   - Simplicité : 10/10
+- **Note globale tests** : 10/10
+- **Notes par critère (tests)** :
+  - Structure : 10/10
+  - Clean Code : 10/10
+  - Couverture : 10/10
+  - Clarté : 10/10
+  - Robustesse : 10/10
 - **Comparaison** : Note passée de 9/10 à 10/10
 - **Statut** : Toutes les corrections validées
 - **Commentaire** : Validé, archiver dans Revue/Archives/.
 ```
 
-Le script `archive_validated_reviews.py` détecte "Note globale : 10/10" et déplace `revue_code_Greeting.md`, `revue_code_Greeting_iteration2.md`, etc., dans `Revue/Archives/`.
-
 ---
 
-## Intégration et Automatisation
+## Intégration dans le Workflow Complet
 
 ### Structure du projet
+
 ```
 project/
 ├── src/
@@ -926,28 +1308,31 @@ project/
 ```
 
 ### Exécution manuelle
+
 1. **Revue initiale** :
+
    - Exécute `python generate_review_prompts.py`.
    - Soumets chaque `prompt_revue_code_*.txt` au **Chat de Revue**.
    - Enregistre les fichiers `.md` dans `Revue/`.
 
 2. **Correction** :
+
    - Exécute `python generate_correction_prompts.py`.
    - Soumets chaque `prompt_correction_*.txt` au **Chat de Développement**.
-   - Enregistre les fichiers corrigés et `.md` mis à jour.
+   - Enregistre les fichiers corrigés (source et test) et `.md` mis à jour.
 
 3. **Validation** :
+
    - Exécute `python generate_validation_prompts.py`.
    - Soumets chaque `prompt_validation_*.txt` au **Chat de Revue**.
    - Exécute `python archive_validated_reviews.py` pour archiver les fichiers validés.
-   - Si non validé, répète l’étape 2.
+   - Si non validé, répète l’étape 2 avec le dernier `.md` (ex. : `revue_code_Greeting_iteration2.md`).
 
 4. **Tests** :
    - Exécute `npm test` pour vérifier les tests unitaires.
    - Vérifie la couverture : `npm test -- --coverage`.
 
 ### Intégration CI/CD (GitHub Actions)
-Voici un pipeline qui automatise le workflow après chaque push :
 
 ```yaml
 name: Code Review and Correction Workflow
@@ -959,10 +1344,10 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: "3.x"
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: "16"
       - run: pip install glob2
       - run: npm install
 
@@ -1007,137 +1392,156 @@ jobs:
           path: Revue/Archives/
 ```
 
-**Note** : Ce pipeline génère les prompts mais ne soumet pas automatiquement les prompts à Cursor (car cela nécessite une interaction avec l’API de Cursor, non disponible ici). Tu devras soumettre les prompts manuellement ou intégrer une API si disponible (vérifie https://x.ai/api).
+**Note** : Les prompts doivent être soumis manuellement à Cursor sauf si une API est disponible (vérifie https://x.ai/api).
 
 ---
 
 ## Explications Détaillées
 
-### Rôles des experts
-- **Expert X (Revue et Validation)** :
-  - Utilise le **Chat de Revue** pour analyser le code initialement et valider les corrections.
-  - Produit des fichiers `.md` structurés avec des notes et des tâches.
-  - Décide si un fichier est validé (10/10) pour archivage ou nécessite une nouvelle correction.
-- **Expert Y (Correction)** :
-  - Utilise le **Chat de Développement** pour appliquer les recommandations.
-  - Met à jour le code, les tests, et le fichier `.md`.
-  - S’assure que les corrections respectent TypeScript et React Native.
+### Revue des tests
 
-### Gestion des itérations
-- Chaque validation génère un fichier `.md` avec un numéro d’itération (ex. : `iteration2`, `iteration3`).
-- Le script de validation incrémente automatiquement le numéro d’itération.
-- Si la note atteint 10/10, tous les fichiers `.md` associés (initial et itérations) sont archivés.
+- **Critères spécifiques** : Les tests sont évalués sur **Structure**, **Clean Code**, **Couverture**, **Clarté**, et **Robustesse** pour garantir des tests complets et fiables.
+- **Tâches claires** : Chaque tâche dans le `.md` indique si elle concerne le fichier source ou le fichier de test avec le champ **Fichier concerné**.
+- **Absence de tests** : Si aucun test n’existe, une tâche est ajoutée dans la section **Tests** du fichier source pour en créer un.
+
+### Note globale combinée
+
+- La note globale combinée est la moyenne des notes globales du fichier source et du fichier de test (ou seulement source si pas de tests).
+- Une note de 10/10 nécessite que le fichier source et le fichier de test soient parfaits (10/10 chacun).
 
 ### Archivage
-- Le script `archive_validated_reviews.py` vérifie la présence de "Note globale : 10/10" ou "Validé, archiver dans Revue/Archives/".
-- Les fichiers sont déplacés dans `Revue/Archives/` pour garder une trace sans encombrer `Revue/`.
+
+- L’archivage est déclenché uniquement si la note globale combinée est 10/10, garantissant que le code et les tests sont parfaits.
+- Tous les fichiers `.md` associés (initial et itérations) sont déplacés dans `Revue/Archives/`.
+
+### Gestion des itérations
+
+- Chaque validation génère un fichier `.md` avec un numéro d’itération incrémenté (ex. : `iteration2`).
+- Si des tâches persistent, le dernier `.md` (ex. : `revue_code_Greeting_iteration2.md`) est utilisé pour la prochaine correction.
 
 ### Tests unitaires
-- Les tests sont créés/mis à jour par l’Expert Y et validés par l’Expert X.
-- Exécute `npm test` après chaque correction pour confirmer que le code fonctionne.
-- La couverture (`npm test -- --coverage`) aide à vérifier que les tests sont complets.
+
+- Les tests corrigés sont exécutés après chaque correction (`npm test`).
+- La couverture (`npm test -- --coverage`) valide que les cas limites sont couverts.
 
 ### Gestion des erreurs
-- Si un fichier source ou `.md` est manquant, les scripts affichent des erreurs claires.
-- Si une tâche est ambiguë, les experts notent des hypothèses dans le `.md`.
-- Les prompts incluent des instructions pour gérer les ambiguïtés.
+
+- Les scripts gèrent les cas où les fichiers source ou test sont absents.
+- Les prompts incluent des instructions pour documenter les ambiguïtés.
 
 ---
 
-## Conseils pour l’implémentation
+## Exemple Complet
 
-1. **Conventions** :
-   - Assure-toi que ton projet suit une structure claire (ex. : `src/components/`, `src/hooks/`).
-   - Configure ESLint pour valider le code TypeScript :
+**Fichiers initiaux** :
+
+- **Source** : `src/components/Greeting.tsx`
+
+  ```typescript
+  import React from 'react';
+  import { View, Text } from 'react-native';
+
+  interface Props {
+    name: string;
+  }
+
+  const Greeting = ({ name }: Props) => {
+    if (!name) throw new Error('Name is required');
+    let greeting = 'Hello, ' + name + '!';
+    return (
+      <View testID="greeting-container">
+        <Text testID="greeting-text">{greeting}</Text>
+      </View>
+    );
+  };
+
+  export default Greeting;
+  ```
+
+- **Test** : `src/__tests__/test_Greeting.test.tsx`
+
+  ```typescript
+  import { render, screen } from '@testing-library/react-native';
+  import Greeting from '../components/Greeting';
+
+  describe('Greeting Component', () => {
+    it('renders correctly with valid name prop', () => {
+      render(<Greeting name="Alice" />);
+      expect(screen.getByTestId('greeting-text')).toHaveTextContent('Hello, Alice!');
+    });
+  });
+  ```
+
+1. **Étape 1 : Revue initiale** :
+
+   - Script : `generate_review_prompts.py` crée `prompt_revue_code_Greeting.txt`.
+   - Soumission au **Chat de Revue** → Génère `revue_code_Greeting.md` (note combinée 7/10, tâches pour source et test).
+
+2. **Étape 2 : Correction** :
+
+   - Script : `generate_correction_prompts.py` crée `prompt_correction_Greeting.txt`.
+   - Soumission au **Chat de Développement** → Produit :
+     - `Greeting.tsx` corrigé (avec `GreetingProps`, template literal, `React.memo`, JSDoc).
+     - `test_Greeting.test.tsx` corrigé (test pour nom long, JSDoc).
+     - `revue_code_Greeting.md` mis à jour (note 9/10, tâches restantes).
+
+3. **Étape 3 : Validation** :
+   - Script : `generate_validation_prompts.py` crée `prompt_validation_Greeting_iteration2.txt`.
+   - Soumission au **Chat de Revue** → Génère `revue_code_Greeting_iteration2.md` (note 9/10, tâches restantes).
+   - Répète l’étape 2 pour corriger les tâches restantes (ex. : JSDoc source, robustesse test).
+   - Validation finale (itération 3) donne 10/10 → Script `archive_validated_reviews.py` archive les `.md` dans `Revue/Archives/`.
+
+---
+
+## Conseils pour l’Implémentation
+
+1. **Configuration Jest** :
+
+   - Assure-toi que `jest.config.js` est configuré pour TypeScript et React Native :
+     ```javascript
+     module.exports = {
+       preset: "react-native",
+       setupFilesAfterEnv: ["@testing-library/jest-native/extend-expect"],
+       transform: {
+         "^.+\\.(ts|tsx)$": "ts-jest",
+       },
+       testPathIgnorePatterns: ["/node_modules/", "/__tests__/mocks/"],
+       moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+     };
+     ```
+
+2. **Linter** :
+
+   - Utilise ESLint pour valider le code et les tests :
      ```bash
      npm install --save-dev eslint eslint-plugin-react eslint-plugin-react-native @typescript-eslint/parser @typescript-eslint/eslint-plugin
      ```
      Crée `.eslintrc.js` :
      ```javascript
      module.exports = {
-       parser: '@typescript-eslint/parser',
-       plugins: ['react', 'react-native', '@typescript-eslint'],
-       extends: ['plugin:react/recommended', 'plugin:@typescript-eslint/recommended'],
+       parser: "@typescript-eslint/parser",
+       plugins: ["react", "react-native", "@typescript-eslint"],
+       extends: ["plugin:react/recommended", "plugin:@typescript-eslint/recommended"],
        rules: {
-         'react/prop-types': 'off',
+         "react/prop-types": "off",
        },
      };
      ```
 
-2. **Jest** :
-   - Configure Jest pour TypeScript et React Native (voir `jest.config.js` dans les réponses précédentes).
-   - Installe les dépendances :
-     ```bash
-     npm install --save-dev jest @testing-library/react-native @testing-library/jest-native @react-native-async-storage/async-storage ts-jest @types/jest
-     ```
-
 3. **API Cursor** :
-   - Si Cursor prend en charge une API (vérifie https://x.ai/api), modifie les scripts pour soumettre les prompts automatiquement :
-     ```python
-     import requests
-     def submit_to_cursor(prompt_content, chat_type="review"):
-         api_url = "https://x.ai/api/cursor"  # Remplacer par l’URL réelle
-         payload = {"prompt": prompt_content, "chat_type": chat_type}
-         response = requests.post(api_url, json=payload)
-         return response.json()
-     ```
+
+   - Si une API est disponible (vérifie https://x.ai/api), intègre-la pour soumettre les prompts automatiquement.
 
 4. **Personnalisation** :
-   - Ajuste les chemins dans les scripts si tes fichiers ne sont pas dans `src/components/` (ex. : `src/hooks/`).
-   - Filtre certains fichiers dans les scripts (ex. : ignore `src/utils/` avec `if "utils" in file_path: continue`).
+
+   - Ajuste les chemins dans les scripts si tes tests ne sont pas dans `src/__tests__/`.
+   - Filtre les fichiers spécifiques (ex. : ignore `src/utils/`) dans les scripts.
 
 5. **Suivi** :
-   - Garde un journal des itérations dans `Revue/Archives/` pour tracer l’historique.
-   - Utilise `git` pour versionner les corrections :
+   - Versionne les corrections avec Git :
      ```bash
-     git add src/ __tests__/ Revue/
+     git add src/ Revue/
      git commit -m "Corrections basées sur revue de code"
      ```
 
 ---
-
-## Exemple Complet
-
-**Fichier initial** : `src/components/Greeting.tsx`
-```typescript
-import React from 'react';
-import { View, Text } from 'react-native';
-
-interface Props {
-  name: string;
-}
-
-const Greeting = ({ name }: Props) => {
-  if (!name) throw new Error('Name is required');
-  let greeting = 'Hello, ' + name + '!';
-  return (
-    <View testID="greeting-container">
-      <Text testID="greeting-text">{greeting}</Text>
-    </View>
-  );
-};
-
-export default Greeting;
-```
-
-1. **Étape 1 : Revue** :
-   - Script : `generate_review_prompts.py` crée `prompt_revue_code_Greeting.txt`.
-   - Soumission au **Chat de Revue** → Génère `revue_code_Greeting.md` (note 7/10, 4 tâches).
-
-2. **Étape 2 : Correction** :
-   - Script : `generate_correction_prompts.py` crée `prompt_correction_Greeting.txt`.
-   - Soumission au **Chat de Développement** → Produit :
-     - `Greeting.tsx` corrigé (avec `GreetingProps`, template literal, `React.memo`).
-     - `__tests__/test_Greeting.test.tsx`.
-     - `revue_code_Greeting.md` mis à jour (note 9/10, 2 nouvelles tâches).
-
-3. **Étape 3 : Validation** :
-   - Script : `generate_validation_prompts.py` crée `prompt_validation_Greeting_iteration2.txt`.
-   - Soumission au **Chat de Revue** → Génère `revue_code_Greeting_iteration2.md` (note 9/10, tâches restantes).
-   - Comme la note n’est pas 10/10, renvoie à l’Expert Y (répète l’étape 2).
-   - Après correction finale (JSDoc, test pour nom long), nouvelle validation donne 10/10.
-   - Script : `archive_validated_reviews.py` déplace les fichiers `.md` dans `Revue/Archives/`.
-
----
-
-Si tu veux des ajustements (ex. : critères spécifiques, autres dossiers, intégration API), un exemple avec un fichier particulier, ou plus de détails sur une étape, fais-moi signe ! Précise aussi si tu utilises des bibliothèques comme React Navigation ou Redux pour adapter les prompts.

@@ -22,7 +22,7 @@ export default function CalculatorScreen() {
   const { theme } = useContext(ThemeContext);
   const styles = getThemedStyles(theme);
   const { t } = useTranslation();
-  
+
   const [initial, setInitial] = useState("");
   const [balance, setBalance] = useState("");
   const [final, setFinal] = useState("");
@@ -43,33 +43,33 @@ export default function CalculatorScreen() {
     const targetVal = target ? parseFloat(target) : undefined;
 
     if (isNaN(initialVal)) {
-      newFieldErrors.initial = t('calculator.error.mustBeNumber');
+      newFieldErrors.initial = t("calculator.error.mustBeNumber");
       hasError = true;
     }
     if (isNaN(finalVal)) {
-      newFieldErrors.final = t('calculator.error.mustBeNumber');
+      newFieldErrors.final = t("calculator.error.mustBeNumber");
       hasError = true;
     }
     if (isNaN(reductionVal)) {
-      newFieldErrors.reduction = t('calculator.error.mustBeNumber');
+      newFieldErrors.reduction = t("calculator.error.mustBeNumber");
       hasError = true;
     }
     if (balance && isNaN(balanceVal as number)) {
-      newFieldErrors.balance = t('calculator.error.mustBeNumber');
+      newFieldErrors.balance = t("calculator.error.mustBeNumber");
       hasError = true;
     }
     if (target && isNaN(targetVal as number)) {
-      newFieldErrors.target = t('calculator.error.mustBeNumber');
+      newFieldErrors.target = t("calculator.error.mustBeNumber");
       hasError = true;
     }
 
     setFieldErrors(newFieldErrors);
 
     if (hasError) {
-      setResult({ success: false, error: t('calculator.error.invalidInput') });
+      setResult({ success: false, error: t("calculator.error.invalidInput") });
       return;
     }
-    
+
     setResult(null);
 
     const output = calculateIterations(
@@ -80,62 +80,63 @@ export default function CalculatorScreen() {
       targetVal,
       targetIsPercentage
     );
-    
+
     setResult(output);
   };
 
   const toggleTargetType = () => {
     setTargetIsPercentage(!targetIsPercentage);
     setTarget("");
-    setFieldErrors(prev => ({ ...prev, target: undefined })); // Réinitialiser l'erreur du champ target
+    setFieldErrors((prev) => ({ ...prev, target: undefined })); // Réinitialiser l'erreur du champ target
   };
 
   // Helper pour effacer l'erreur d'un champ quand l'utilisateur commence à taper
-  const handleChangeText = (setter: (text: string) => void, fieldName: keyof FieldErrors) => (text: string) => {
-    setter(text);
-    if (fieldErrors[fieldName]) {
-      setFieldErrors(prev => ({ ...prev, [fieldName]: undefined }));
-    }
-    // Si le résultat global montrait une erreur d'input, on le cache
-    if (result && !result.success && result.error === t('calculator.error.invalidInput')) {
+  const handleChangeText =
+    (setter: (text: string) => void, fieldName: keyof FieldErrors) => (text: string) => {
+      setter(text);
+      if (fieldErrors[fieldName]) {
+        setFieldErrors((prev) => ({ ...prev, [fieldName]: undefined }));
+      }
+      // Si le résultat global montrait une erreur d'input, on le cache
+      if (result && !result.success && result.error === t("calculator.error.invalidInput")) {
         setResult(null);
-    }
-  };
+      }
+    };
 
   return (
-    <ScrollView 
+    <ScrollView
       style={styles.container}
       contentContainerStyle={styles.calculatorScrollContent}
       keyboardShouldPersistTaps="handled" // Pour fermer le clavier
     >
       <Input
-        label={t('calculator.balance')}
+        label={t("calculator.balance")}
         value={balance}
-        onChangeText={handleChangeText(setBalance, 'balance')}
+        onChangeText={handleChangeText(setBalance, "balance")}
         keyboardType="numeric"
         isError={!!fieldErrors.balance}
         errorMessage={fieldErrors.balance}
       />
       <Input
-        label={t('calculator.initialPrice')}
+        label={t("calculator.initialPrice")}
         value={initial}
-        onChangeText={handleChangeText(setInitial, 'initial')}
+        onChangeText={handleChangeText(setInitial, "initial")}
         keyboardType="numeric" // Ajouté pour la cohérence
         isError={!!fieldErrors.initial}
         errorMessage={fieldErrors.initial}
       />
-      <Input 
-        label={t('calculator.finalPrice')} 
-        value={final} 
-        onChangeText={handleChangeText(setFinal, 'final')} 
+      <Input
+        label={t("calculator.finalPrice")}
+        value={final}
+        onChangeText={handleChangeText(setFinal, "final")}
         keyboardType="numeric" // Ajouté pour la cohérence
         isError={!!fieldErrors.final}
         errorMessage={fieldErrors.final}
       />
       <Input
-        label={t('calculator.reductionRate')}
+        label={t("calculator.reductionRate")}
         value={reduction}
-        onChangeText={handleChangeText(setReduction, 'reduction')}
+        onChangeText={handleChangeText(setReduction, "reduction")}
         keyboardType="numeric" // Ajouté pour la cohérence
         isError={!!fieldErrors.reduction}
         errorMessage={fieldErrors.reduction}
@@ -143,7 +144,7 @@ export default function CalculatorScreen() {
 
       <TargetInput
         value={target}
-        onChangeText={handleChangeText(setTarget, 'target')}
+        onChangeText={handleChangeText(setTarget, "target")}
         isPercentage={targetIsPercentage}
         onToggle={toggleTargetType}
         // theme prop n'est plus nécessaire si TargetInput utilise ThemeContext
@@ -151,9 +152,9 @@ export default function CalculatorScreen() {
         errorMessage={fieldErrors.target}
       />
 
-      <Button title={t('calculator.calculate')} onPress={handleCalculate} />
+      <Button title={t("calculator.calculate")} onPress={handleCalculate} />
       {/* Afficher la carte de résultat uniquement si pas d'erreur d'input global OU si c'est un succès */}
-      {result && (result.success || result.error !== t('calculator.error.invalidInput')) && (
+      {result && (result.success || result.error !== t("calculator.error.invalidInput")) && (
         <CalculationResultCard result={result} />
       )}
     </ScrollView>

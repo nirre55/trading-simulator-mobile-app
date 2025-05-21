@@ -11,4 +11,4 @@ export const ThemeContext = createContext<ThemeContextType>({
   theme: LightTheme,
   isDark: false,
   toggleTheme: () => {},
-}); 
+});

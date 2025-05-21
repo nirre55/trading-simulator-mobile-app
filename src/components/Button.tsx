@@ -11,7 +11,7 @@ type Props = {
 export default function Button({ title, onPress }: Props) {
   const { theme } = useContext(ThemeContext);
   const styles = getThemedStyles(theme);
-  
+
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
       <Text style={styles.buttonText}>{title}</Text>

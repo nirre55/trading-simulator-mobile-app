@@ -28,15 +28,15 @@ function validateInputs(initial: number, final: number, reductionPercent: number
   if (isNaN(initial) || isNaN(final) || isNaN(reductionPercent)) {
     return "calculator.error.invalidValues";
   }
-  
+
   if (initial <= 0 || final <= 0 || reductionPercent <= 0) {
     return "calculator.error.invalidValues";
   }
-  
+
   if (final >= initial) {
     return "calculator.error.invalidValues";
   }
-  
+
   return null;
 }
 
@@ -53,20 +53,20 @@ function calculateExitPriceAndProfit(
   if (targetValue === undefined) {
     return { exitPrice: undefined, profit: undefined };
   }
-  
+
   let exitPrice: number | undefined;
-  
+
   if (targetIsPercentage) {
     exitPrice = currentPrice * (1 + targetValue / 100);
   } else {
     exitPrice = targetValue;
   }
-  
+
   let profit: number | undefined;
   if (exitPrice && allocationPerTrade && leverage) {
-    profit = (exitPrice - currentPrice) * (allocationPerTrade * leverage / currentPrice);
+    profit = (exitPrice - currentPrice) * ((allocationPerTrade * leverage) / currentPrice);
   }
-  
+
   return { exitPrice, profit };
 }
 
@@ -74,8 +74,8 @@ function calculateExitPriceAndProfit(
  * Calcule les détails de chaque itération
  */
 function generateIterationDetails(
-  initial: number, 
-  reductionRate: number, 
+  initial: number,
+  reductionRate: number,
   ceil: number,
   targetValue?: number,
   targetIsPercentage?: boolean,
@@ -84,7 +84,7 @@ function generateIterationDetails(
 ): IterationDetail[] {
   const iterationDetails: IterationDetail[] = [];
   let currentPrice = initial;
-  
+
   for (let i = 1; i <= ceil; i++) {
     const nextPrice = currentPrice * (1 - reductionRate);
     const { exitPrice, profit } = calculateExitPriceAndProfit(
@@ -94,18 +94,18 @@ function generateIterationDetails(
       allocationPerTrade,
       leverage
     );
-    
+
     iterationDetails.push({
       iteration: i,
       entryPrice: currentPrice,
       liquidationPrice: nextPrice,
       exitPrice,
-      profit
+      profit,
     });
-    
+
     currentPrice = nextPrice;
   }
-  
+
   return iterationDetails;
 }
 
@@ -125,12 +125,12 @@ export function calculateIterations(
   if (validationError) {
     return {
       success: false,
-      error: validationError
+      error: validationError,
     };
   }
 
   const reductionRate = reductionPercent / 100;
-  
+
   // Calculs principaux
   const iterations = Math.log(final / initial) / Math.log(1 - reductionRate);
   const floor = Math.floor(iterations);
@@ -146,7 +146,7 @@ export function calculateIterations(
 
   // Calcul du levier recommandé
   const leverage = Math.floor(100 / reductionPercent);
-  
+
   // Génération des détails d'itération
   const iterationDetails = generateIterationDetails(
     initial,
@@ -157,7 +157,7 @@ export function calculateIterations(
     allocationPerTrade,
     leverage
   );
-  
+
   return {
     success: true,
     iterations,
@@ -169,6 +169,6 @@ export function calculateIterations(
     balance: balance && balance > 0 ? balance : undefined,
     allocationPerTrade,
     leverage,
-    iterationDetails
+    iterationDetails,
   };
 }

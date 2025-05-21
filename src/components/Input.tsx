@@ -11,10 +11,17 @@ type Props = {
   errorMessage?: string;
 } & TextInputProps;
 
-export default function Input({ label, value, onChangeText, isError, errorMessage, ...props }: Props) {
+export default function Input({
+  label,
+  value,
+  onChangeText,
+  isError,
+  errorMessage,
+  ...props
+}: Props) {
   const { theme } = useContext(ThemeContext);
   const styles = getThemedStyles(theme);
-  
+
   return (
     <View style={styles.inputContainer}>
       <Text style={styles.label}>{label}</Text>

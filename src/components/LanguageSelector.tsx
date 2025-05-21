@@ -1,10 +1,10 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, Pressable, StyleSheet } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { ThemeContext } from '../contexts/ThemeContext';
-import { changeLanguage } from '../translations/i18n';
-import { getThemedStyles } from '../styles/styles';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useContext, useState } from "react";
+import { View, Text, TouchableOpacity, Modal, Pressable, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
+import { ThemeContext } from "../contexts/ThemeContext";
+import { changeLanguage } from "../translations/i18n";
+import { getThemedStyles } from "../styles/styles";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Language {
   code: string;
@@ -12,8 +12,8 @@ interface Language {
 }
 
 const languages: Language[] = [
-  { code: 'en', name: 'English' },
-  { code: 'fr', name: 'Français' }
+  { code: "en", name: "English" },
+  { code: "fr", name: "Français" },
 ];
 
 const LanguageSelector: React.FC = () => {
@@ -21,25 +21,25 @@ const LanguageSelector: React.FC = () => {
   const { theme } = useContext(ThemeContext);
   const themedStyles = getThemedStyles(theme);
   const [modalVisible, setModalVisible] = useState(false);
-  
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
-  
+
+  const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0];
+
   const handleChangeLanguage = (languageCode: string) => {
     changeLanguage(languageCode);
     setModalVisible(false);
   };
-  
+
   return (
     <View>
-      <TouchableOpacity 
+      <TouchableOpacity
         testID="language-selector-button"
         style={localStyles.selectorButton}
         onPress={() => setModalVisible(true)}
       >
-        <Ionicons 
+        <Ionicons
           name="language-outline"
-          size={22} 
-          color={theme.colors.primary} 
+          size={22}
+          color={theme.colors.primary}
           style={localStyles.leftIconStyle}
         />
         <Text style={[themedStyles.text, localStyles.languageText]}>{currentLanguage.name}</Text>
@@ -56,22 +56,28 @@ const LanguageSelector: React.FC = () => {
       >
         <Pressable style={localStyles.modalOverlay} onPress={() => setModalVisible(false)}>
           <View style={[localStyles.modalView, { backgroundColor: theme.colors.card }]}>
-            {modalVisible && languages.map((language) => (
-              <TouchableOpacity
-                testID={`language-option-${language.code}`}
-                key={language.code}
-                style={localStyles.modalOption}
-                onPress={() => handleChangeLanguage(language.code)}
-              >
-                <Text style={[
-                  localStyles.modalOptionText, 
-                  { color: theme.colors.text },
-                  i18n.language === language.code && { color: theme.colors.primary, fontWeight: 'bold' }
-                ]}>
-                  {language.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {modalVisible &&
+              languages.map((language) => (
+                <TouchableOpacity
+                  testID={`language-option-${language.code}`}
+                  key={language.code}
+                  style={localStyles.modalOption}
+                  onPress={() => handleChangeLanguage(language.code)}
+                >
+                  <Text
+                    style={[
+                      localStyles.modalOptionText,
+                      { color: theme.colors.text },
+                      i18n.language === language.code && {
+                        color: theme.colors.primary,
+                        fontWeight: "bold",
+                      },
+                    ]}
+                  >
+                    {language.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
           </View>
         </Pressable>
       </Modal>
@@ -81,9 +87,9 @@ const LanguageSelector: React.FC = () => {
 
 const localStyles = StyleSheet.create({
   selectorButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: 12,
     paddingHorizontal: 5,
   },
@@ -95,34 +101,34 @@ const localStyles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalView: {
     margin: 20,
     borderRadius: 10,
     padding: 20,
-    alignItems: 'stretch',
-    shadowColor: '#000',
+    alignItems: "stretch",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2
+      height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    width: '80%'
+    width: "80%",
   },
   modalOption: {
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
+    borderBottomColor: "rgba(0,0,0,0.05)",
   },
   modalOptionText: {
     fontSize: 16,
-    textAlign: 'center',
-  }
+    textAlign: "center",
+  },
 });
 
-export default LanguageSelector; 
+export default LanguageSelector;

@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
-import { View, Text } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { ThemeContext } from '../../contexts/ThemeContext';
-import { getThemedStyles } from '../../styles/styles';
-import { useTranslation } from 'react-i18next';
+import React, { useContext } from "react";
+import { View, Text } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { ThemeContext } from "../../contexts/ThemeContext";
+import { getThemedStyles } from "../../styles/styles";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   message: string;
@@ -13,7 +13,7 @@ const ErrorCard: React.FC<Props> = ({ message }) => {
   const { theme } = useContext(ThemeContext);
   const styles = getThemedStyles(theme);
   const { t } = useTranslation();
-  
+
   return (
     <View style={[styles.card, styles.errorCard]}>
       <View style={styles.errorIconContainer}>
@@ -24,4 +24,4 @@ const ErrorCard: React.FC<Props> = ({ message }) => {
   );
 };
 
-export default ErrorCard; 
+export default ErrorCard;

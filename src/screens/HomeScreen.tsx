@@ -11,8 +11,8 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.centeredContainer}>
-      <Text style={styles.title}>{t('home.welcome')}</Text>
-      <Text style={styles.text}>{t('home.subtitle')}</Text>
+      <Text style={styles.title}>{t("home.welcome")}</Text>
+      <Text style={styles.text}>{t("home.subtitle")}</Text>
     </View>
   );
 }

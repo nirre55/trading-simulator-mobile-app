@@ -24,12 +24,12 @@ const TargetInput: React.FC<TargetInputProps> = ({
   const { t } = useTranslation();
   const { theme } = useContext(ThemeContext);
   const styles = getThemedStyles(theme);
-  
+
   return (
     <View style={styles.targetInputContainer}>
       <View style={styles.targetInputWrapper}>
         <Text style={styles.label}>
-          {t('calculator.targetPrice')} ({isPercentage ? '%' : '$'})
+          {t("calculator.targetPrice")} ({isPercentage ? "%" : "$"})
         </Text>
         <TextInput
           style={[isError ? styles.inputError : styles.input, { height: 40 }]}
@@ -39,19 +39,22 @@ const TargetInput: React.FC<TargetInputProps> = ({
           placeholderTextColor={theme.colors.secondaryText}
         />
         {isError && errorMessage && (
-          <Text style={{ color: theme.colors.errorText, marginTop: 4, marginLeft: 8 }}>{errorMessage}</Text>
+          <Text
+            style={{
+              color: theme.colors.errorText,
+              marginTop: 4,
+              marginLeft: 8,
+            }}
+          >
+            {errorMessage}
+          </Text>
         )}
       </View>
-      <TouchableOpacity 
-        style={styles.targetInputToggleButton} 
-        onPress={onToggle}
-      >
-        <Text style={styles.targetInputToggleButtonText}>
-          {isPercentage ? '$' : '%'}
-        </Text>
+      <TouchableOpacity style={styles.targetInputToggleButton} onPress={onToggle}>
+        <Text style={styles.targetInputToggleButtonText}>{isPercentage ? "$" : "%"}</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-export default TargetInput; 
+export default TargetInput;
